@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OctoTyp</title>
+    <style>
+        :root {
+            --background-color: #f5f5f7;
+            --text-color: #1d1d1f;
+            --accent-color: #0071e3;
+            --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .tweet-box {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+            transition: box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .tweet-box:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        textarea {
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 12px; /* Increased border-radius for more rounded corners */
+            resize: vertical;
+            min-height: 100px;
+            font-size: 16px;
+            font-family: inherit;
+            margin-bottom: 10px;
+            padding: 12px 15px; /* Increased padding for text inside */
+            box-sizing: border-box; /* Ensure padding doesn't affect overall width */
+        }
+
+        textarea::placeholder {
+            color: #999;
+        }
+
+        .tweet-info {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .character-count {
+            margin-right: 10px;
+        }
+
+        .thread-count {
+            display: flex;
+            align-items: center;
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 6px 12px; /* Reduced padding */
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            display: inline-block; /* Changed from flex to inline-block */
+        }
+
+        button:hover {
+            background-color: #005bbf;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .char-limit-control {
+            display: flex;
+            align-items: center;
+        }
+
+        #char-limit {
+            width: 60px;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-left: 10px;
+        }
+
+        .tweet-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .tweet-controls-left {
+            display: flex;
+        }
+
+        .tweet-controls-left button {
+            margin-right: 10px;
+        }
+
+        .copy-btn {
+            margin-left: auto;
+        }
+
+        .remove-btn {
+            background-color: #ff4136; /* Red color for remove button */
+            color: white;
+        }
+
+        .remove-btn:hover {
+            background-color: #d0342b; /* Darker red on hover */
+        }
+
+        .move-controls {
+            position: absolute;
+            right: -40px;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .move-controls button {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            color: #333; /* Darker color for arrows in light mode */
+        }
+
+        /* Dark mode styles */
+        body.dark-mode {
+            --background-color: #1d1d1f;
+            --text-color: #f5f5f7;
+            --box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-mode .tweet-box {
+            background-color: #2c2c2e;
+        }
+
+        body.dark-mode textarea {
+            background-color: #2c2c2e;
+            color: var(--text-color);
+            border-color: #444; /* Darker border color for dark mode */
+        }
+
+        body.dark-mode .remove-btn {
+            background-color: #c62828; /* Darker red for dark mode */
+        }
+
+        body.dark-mode .remove-btn:hover {
+            background-color: #b71c1c; /* Even darker red on hover for dark mode */
+        }
+
+        body.dark-mode .move-controls button {
+            color: #ccc; /* Lighter color for arrows in dark mode */
+        }
+
+        body.dark-mode .tweet-info {
+            color: #999;
+        }
+
+        .modal {
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .modal-content button {
+            margin: 10px;
+        }
+
+        #undo-btn {
+            display: none;
+            margin-left: 10px;
+        }
+
+        /* Dark mode styles for modal */
+        body.dark-mode .modal-content {
+            background-color: #2c2c2e;
+            color: var(--text-color);
+            border-color: #444;
+        }
+
+        .copy-confirm {
+            margin-right: 10px;
+            color: #28a745; /* Green color for confirmation */
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .copy-confirm.show {
+            opacity: 1;
+        }
+
+        /* Dark mode styles */
+        body.dark-mode .copy-confirm {
+            color: #5cb85c; /* Lighter green for dark mode */
+        }
+
+        #combined-post {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        #combined-result .tweet-controls-right {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        #combined-result .copy-confirm {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>OctoTyp</h1>
+
+        <div class="dark-mode-toggle">
+            <label for="dark-mode-switch">Dark Mode</label>
+            <input type="checkbox" id="dark-mode-switch" onchange="toggleDarkMode()">
+        </div>
+
+        <div class="controls">
+            <div class="char-limit-control">
+                <label for="char-limit">Character Limit:</label>
+                <input type="number" id="char-limit" value="280">
+            </div>
+            <button id="start-over-btn" onclick="confirmStartOver()" style="display: none;">Start Over</button>
+            <button id="undo-btn" onclick="undoStartOver()" style="display: none;">Undo</button>
+        </div>
+
+        <div id="tweet-thread"></div>
+
+        <button id="combine-tweets-btn" onclick="combinePosts()" style="display: none;">
+            Combine Posts
+        </button>
+
+        <div id="combined-result" style="display: none;">
+            <h3>Combined Post</h3>
+            <textarea id="combined-post" rows="10" oninput="autoResize(this)"></textarea>
+            <div class="tweet-controls-right">
+                <span class="copy-confirm">Copied!</span>
+                <button onclick="copyToClipboard('combined-post')">
+                    Copy Combined Post
+                </button>
+            </div>
+        </div>
+
+        <!-- Add this modal for confirmation -->
+        <div id="confirmation-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <p>Are you sure you want to start over? All unsaved data will be lost.</p>
+                <button onclick="startOver()">Yes, Start Over</button>
+                <button onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const DEFAULT_CHAR_LIMIT = 280;
+
+        function addTweet(button) {
+            const thread = document.getElementById('tweet-thread');
+            const charLimit = document.getElementById('char-limit').value;
+            const tweetBox = document.createElement('div');
+            tweetBox.className = 'tweet-box';
+            
+            const isFirstTweet = thread.children.length === 0;
+            const placeholderText = isFirstTweet ? "Start here..." : "Continue draft...";
+            
+            tweetBox.innerHTML = `
+                <textarea oninput="updateCharCount(this)" data-limit="${charLimit}" placeholder="${placeholderText}"></textarea>
+                <div class="tweet-info">
+                    <span class="character-count">0/${charLimit}</span>
+                    <span class="thread-count"></span>
+                </div>
+                <div class="tweet-controls">
+                    <div class="tweet-controls-left">
+                        <button onclick="addTweet(this)">Add Tweet</button>
+                        ${isFirstTweet ? '' : '<button class="remove-btn" onclick="removeTweet(this)">Remove</button>'}
+                    </div>
+                    <div class="tweet-controls-right">
+                        <span class="copy-confirm">Copied!</span>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                    </div>
+                </div>
+                ${isFirstTweet ? '' : `
+                <div class="move-controls">
+                    <button onclick="moveTweetUp(this)">▲</button>
+                    <button onclick="moveTweetDown(this)">▼</button>
+                </div>
+                `}
+            `;
+            
+            if (button) {
+                const currentTweetBox = button.closest('.tweet-box');
+                currentTweetBox.insertAdjacentElement('afterend', tweetBox);
+            } else {
+                thread.appendChild(tweetBox);
+            }
+            
+            updateThreadCounts();
+            toggleCombineButton();
+            toggleStartOverButton();
+            
+            // Focus on the new textarea
+            const newTextarea = tweetBox.querySelector('textarea');
+            newTextarea.focus();
+
+            // Add event listener to hide undo button on first keypress
+            newTextarea.addEventListener('keydown', function onFirstKeydown() {
+                document.getElementById('undo-btn').style.display = 'none';
+                this.removeEventListener('keydown', onFirstKeydown);
+            }, { once: true });
+        }
+
+        function updateThreadCounts() {
+            const thread = document.getElementById('tweet-thread');
+            const tweetBoxes = thread.querySelectorAll('.tweet-box');
+            const totalTweets = tweetBoxes.length;
+
+            tweetBoxes.forEach((box, index) => {
+                const threadCountSpan = box.querySelector('.thread-count');
+                threadCountSpan.textContent = `🧵 ${index + 1}/${totalTweets}`;
+            });
+        }
+
+        function removeTweet(button) {
+            const tweetBox = button.closest('.tweet-box');
+            const thread = document.getElementById('tweet-thread');
+            
+            if (thread.children.length > 1) {
+                tweetBox.remove();
+            } else {
+                // If it's the last tweet, clear its content instead of removing it
+                const textarea = tweetBox.querySelector('textarea');
+                textarea.value = '';
+                updateCharCount(textarea);
+            }
+            
+            updateThreadCounts();
+            toggleCombineButton();
+            toggleStartOverButton();
+        }
+
+        function toggleCombineButton() {
+            const tweetBoxes = document.querySelectorAll('.tweet-box');
+            const combineButton = document.getElementById('combine-tweets-btn');
+            combineButton.style.display = tweetBoxes.length > 1 ? 'inline-block' : 'none';
+        }
+
+        function toggleStartOverButton() {
+            const tweetBoxes = document.querySelectorAll('.tweet-box');
+            const startOverBtn = document.getElementById('start-over-btn');
+            startOverBtn.style.display = tweetBoxes.length > 0 ? 'inline-block' : 'none';
+        }
+
+        function updateCharCount(textarea) {
+            const charCount = textarea.value.length;
+            const charLimit = parseInt(textarea.dataset.limit);
+            const countDisplay = textarea.nextElementSibling.querySelector('.character-count');
+            countDisplay.textContent = `${charCount}/${charLimit}`;
+
+            if (charCount <= charLimit * 0.95) {
+                textarea.style.backgroundColor = 'rgba(144, 238, 144, 0.3)'; // Light green
+            } else if (charCount <= charLimit) {
+                textarea.style.backgroundColor = 'rgba(255, 255, 0, 0.3)'; // Bright yellow
+            } else {
+                textarea.style.backgroundColor = 'rgba(255, 0, 0, 0.2)'; // Bright red
+            }
+
+            // Hide undo button when typing starts
+            document.getElementById('undo-btn').style.display = 'none';
+        }
+
+        function copyToClipboard(element) {
+            if (typeof element === 'string') {
+                element = document.getElementById(element);
+            }
+            
+            if (element.tagName === 'TEXTAREA') {
+                element.select();
+            } else {
+                const range = document.createRange();
+                range.selectNode(element);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+            }
+            
+            document.execCommand('copy');
+            
+            if (element.tagName !== 'TEXTAREA') {
+                window.getSelection().removeAllRanges();
+            }
+
+            // Show the "Copied!" confirmation
+            const confirmSpan = element.previousElementSibling;
+            if (confirmSpan && confirmSpan.classList.contains('copy-confirm')) {
+                confirmSpan.classList.add('show');
+                
+                // Hide the confirmation after 2 seconds
+                setTimeout(() => {
+                    confirmSpan.classList.remove('show');
+                }, 2000);
+            }
+        }
+
+        function combinePosts() {
+            const tweetContainers = document.querySelectorAll('.tweet-box');
+            let combinedText = '';
+
+            tweetContainers.forEach((container, index) => {
+                const textarea = container.querySelector('textarea');
+                if (textarea.value.trim() !== '') {
+                    combinedText += textarea.value.trim();
+                    if (index < tweetContainers.length - 1) {
+                        combinedText += '\n\n';
+                    }
+                }
+            });
+
+            const combinedTextarea = document.getElementById('combined-post');
+            combinedTextarea.value = combinedText;
+            autoResize(combinedTextarea);
+
+            document.getElementById('combined-result').style.display = 'block';
+        }
+
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        let previousState = null;
+
+        function confirmStartOver() {
+            document.getElementById('confirmation-modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('confirmation-modal').style.display = 'none';
+        }
+
+        function startOver() {
+            // Save current state for undo functionality
+            previousState = {
+                tweets: Array.from(document.querySelectorAll('.tweet-box textarea')).map(ta => ta.value),
+                charLimit: document.getElementById('char-limit').value
+            };
+
+            // Clear all tweets except the first one
+            const tweetThread = document.getElementById('tweet-thread');
+            while (tweetThread.children.length > 1) {
+                tweetThread.removeChild(tweetThread.lastChild);
+            }
+
+            // Clear the first tweet's content
+            const firstTweet = tweetThread.firstChild.querySelector('textarea');
+            firstTweet.value = '';
+            updateCharCount(firstTweet);
+
+            // Reset character limit to default
+            document.getElementById('char-limit').value = DEFAULT_CHAR_LIMIT;
+
+            // Hide combine button and combined result
+            document.getElementById('combine-tweets-btn').style.display = 'none';
+            document.getElementById('combined-result').style.display = 'none';
+
+            closeModal();
+
+            // Show undo button
+            document.getElementById('undo-btn').style.display = 'inline-block';
+            toggleStartOverButton();
+
+            updateThreadCounts();
+        }
+
+        function undoStartOver() {
+            if (previousState) {
+                // Restore character limit
+                document.getElementById('char-limit').value = previousState.charLimit;
+
+                // Clear existing tweets
+                const tweetThread = document.getElementById('tweet-thread');
+                tweetThread.innerHTML = '';
+
+                // Restore previous tweets
+                previousState.tweets.forEach((tweetContent, index) => {
+                    addTweet();
+                    const textarea = tweetThread.children[index].querySelector('textarea');
+                    textarea.value = tweetContent;
+                    updateCharCount(textarea);
+                });
+
+                // Reset previousState
+                previousState = null;
+
+                // Hide undo button
+                document.getElementById('undo-btn').style.display = 'none';
+
+                // Show combine button if necessary
+                toggleCombineButton();
+                toggleStartOverButton();
+
+                updateThreadCounts();
+            }
+        }
+
+        function moveTweetUp(button) {
+            const tweetBox = button.closest('.tweet-box');
+            const prevTweetBox = tweetBox.previousElementSibling;
+            if (prevTweetBox) {
+                tweetBox.parentNode.insertBefore(tweetBox, prevTweetBox);
+                updateThreadCounts();
+            }
+        }
+
+        function moveTweetDown(button) {
+            const tweetBox = button.closest('.tweet-box');
+            const nextTweetBox = tweetBox.nextElementSibling;
+            if (nextTweetBox) {
+                tweetBox.parentNode.insertBefore(nextTweetBox, tweetBox);
+                updateThreadCounts();
+            }
+        }
+
+        // Initialize the page with default settings
+        window.onload = function() {
+            document.getElementById('char-limit').value = DEFAULT_CHAR_LIMIT;
+            addTweet(); // This will add the first tweet
+            toggleStartOverButton();
+            
+            // Check for dark mode preference
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('dark-mode-switch').checked = true;
+            }
+        };
+    </script>
+</body>
+</html>
