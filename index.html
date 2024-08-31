@@ -336,7 +336,7 @@
                     </div>
                     <div class="tweet-controls-right">
                         <span class="copy-confirm">Copied!</span>
-                        <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                        <button class="copy-btn" onclick="copyToClipboard(this.closest('.tweet-box').querySelector('textarea'))">Copy</button>
                     </div>
                 </div>
                 ${isFirstTweet ? '' : `
@@ -429,35 +429,31 @@
         }
 
         function copyToClipboard(element) {
+            let textToCopy;
             if (typeof element === 'string') {
                 element = document.getElementById(element);
             }
             
             if (element.tagName === 'TEXTAREA') {
-                element.select();
+                textToCopy = element.value;
             } else {
-                const range = document.createRange();
-                range.selectNode(element);
-                window.getSelection().removeAllRanges();
-                window.getSelection().addRange(range);
+                textToCopy = element.textContent;
             }
             
-            document.execCommand('copy');
-            
-            if (element.tagName !== 'TEXTAREA') {
-                window.getSelection().removeAllRanges();
-            }
-
-            // Show the "Copied!" confirmation
-            const confirmSpan = element.previousElementSibling;
-            if (confirmSpan && confirmSpan.classList.contains('copy-confirm')) {
-                confirmSpan.classList.add('show');
-                
-                // Hide the confirmation after 2 seconds
-                setTimeout(() => {
-                    confirmSpan.classList.remove('show');
-                }, 2000);
-            }
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // Show the "Copied!" confirmation
+                const confirmSpan = element.closest('.tweet-controls-right').querySelector('.copy-confirm');
+                if (confirmSpan) {
+                    confirmSpan.classList.add('show');
+                    
+                    // Hide the confirmation after 2 seconds
+                    setTimeout(() => {
+                        confirmSpan.classList.remove('show');
+                    }, 2000);
+                }
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
         }
 
         function combinePosts() {
