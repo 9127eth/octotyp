@@ -211,14 +211,16 @@
             margin: 15% auto;
             padding: 20px;
             border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
+            width: 90%;
+            max-width: 400px; /* Reduced from 500px */
             border-radius: 10px;
             text-align: center;
         }
 
         .modal-content button {
             margin: 10px;
+            font-size: 14px; /* Reduced font size */
+            padding: 8px 16px; /* Adjusted padding */
         }
 
         #undo-btn {
@@ -326,10 +328,310 @@
         body.dark-mode .slider:before {
             background-color: #f5f5f7;
         }
+
+        /* Apple-inspired authentication UI styles */
+        #sign-up-form, #sign-in-form {
+            max-width: 280px;
+            margin: 20px auto;
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #sign-up-form h2, #sign-in-form h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #1d1d1f;
+        }
+
+        #sign-up-form input, #sign-in-form input {
+            width: calc(100% - 24px);
+            margin-bottom: 8px;
+            padding: 10px;
+            border: 1px solid #d1d1d1;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        #sign-up-form input:focus, #sign-in-form input:focus {
+            outline: none;
+            border-color: #0071e3;
+        }
+
+        #sign-up-form button, #sign-in-form button {
+            width: 100%;
+            background-color: #0071e3;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 8px;
+        }
+
+        #sign-up-form button:hover, #sign-in-form button:hover {
+            background-color: #0077ed;
+        }
+
+        #sign-up-form button:active, #sign-in-form button:active {
+            background-color: #006edb;
+        }
+
+        .google-btn {
+            background-color: #ffffff !important;
+            color: #1d1d1f !important;
+            border: 1px solid #d1d1d1 !important;
+        }
+
+        .google-btn:hover {
+            background-color: #f5f5f7 !important;
+        }
+
+        /* Dark mode styles for authentication UI */
+        body.dark-mode #sign-up-form,
+        body.dark-mode #sign-in-form {
+            background-color: #1c1c1e;
+        }
+
+        body.dark-mode #sign-up-form h2,
+        body.dark-mode #sign-in-form h2 {
+            color: #f5f5f7;
+        }
+
+        body.dark-mode #sign-up-form input,
+        body.dark-mode #sign-in-form input {
+            background-color: #2c2c2e;
+            border-color: #3a3a3c;
+            color: #ffffff;
+        }
+
+        body.dark-mode #sign-up-form input:focus,
+        body.dark-mode #sign-in-form input:focus {
+            border-color: #0a84ff;
+        }
+
+        body.dark-mode #sign-up-form button,
+        body.dark-mode #sign-in-form button {
+            background-color: #0a84ff;
+        }
+
+        body.dark-mode #sign-up-form button:hover,
+        body.dark-mode #sign-in-form button:hover {
+            background-color: #0591ff;
+        }
+
+        body.dark-mode #sign-up-form button:active,
+        body.dark-mode #sign-in-form button:active {
+            background-color: #0082f0;
+        }
+
+        body.dark-mode .google-btn {
+            background-color: #2c2c2e !important;
+            color: #f5f5f7 !important;
+            border-color: #3a3a3c !important;
+        }
+
+        body.dark-mode .google-btn:hover {
+            background-color: #3a3a3c !important;
+        }
+
+        .error-message {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            font-size: 14px;
+            padding: 8px;
+            margin-bottom: 12px;
+            display: none;
+        }
+
+        body.dark-mode .error-message {
+            color: #f8d7da;
+            background-color: #721c24;
+            border-color: #9d2932;
+        }
+
+        #user-info {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 12px;
+            background-color: #f5f5f7;
+            padding: 5px 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        #user-email {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #sign-out-btn {
+            font-size: 12px;
+            padding: 4px 8px;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            border: 1px solid #d1d1d1;
+        }
+
+        #sign-out-btn:hover {
+            background-color: #e5e5e7;
+        }
+
+        /* Dark mode styles for user info */
+        body.dark-mode #user-info {
+            background-color: #2c2c2e;
+        }
+
+        body.dark-mode #sign-out-btn {
+            background-color: #2c2c2e;
+            color: #f5f5f7;
+            border-color: #3a3a3c;
+        }
+
+        body.dark-mode #sign-out-btn:hover {
+            background-color: #3a3a3c;
+        }
+
+        #auth-container {
+            /* Remove any width, height, or positioning styles */
+            margin: 20px auto;
+            padding: 15px;
+        }
+
+        #forgot-password-form {
+            max-width: 280px;
+            margin: 20px auto;
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        #forgot-password-form h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #1d1d1f;
+        }
+
+        #forgot-password-form input {
+            width: calc(100% - 24px);
+            margin-bottom: 8px;
+            padding: 10px;
+            border: 1px solid #d1d1d1;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        #forgot-password-form input:focus {
+            outline: none;
+            border-color: #0071e3;
+        }
+
+        #forgot-password-form button {
+            width: 100%;
+            background-color: #0071e3;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 8px;
+        }
+
+        #forgot-password-form button:hover {
+            background-color: #0077ed;
+        }
+
+        #forgot-password-form button:active {
+            background-color: #006edb;
+        }
+
+        #forgot-password-form a {
+            display: block;
+            text-align: center;
+            font-size: 14px;
+            color: #0071e3;
+            text-decoration: none;
+        }
+
+        #forgot-password-form a:hover {
+            text-decoration: underline;
+        }
+
+        /* Dark mode styles for forgot password form */
+        body.dark-mode #forgot-password-form {
+            background-color: #1c1c1e;
+        }
+
+        body.dark-mode #forgot-password-form h2 {
+            color: #f5f5f7;
+        }
+
+        body.dark-mode #forgot-password-form input {
+            background-color: #2c2c2e;
+            border-color: #3a3a3c;
+            color: #ffffff;
+        }
+
+        body.dark-mode #forgot-password-form input:focus {
+            border-color: #0a84ff;
+        }
+
+        body.dark-mode #forgot-password-form button {
+            background-color: #0a84ff;
+        }
+
+        body.dark-mode #forgot-password-form button:hover {
+            background-color: #0591ff;
+        }
+
+        body.dark-mode #forgot-password-form button:active {
+            background-color: #0082f0;
+        }
+
+        body.dark-mode #forgot-password-form a {
+            color: #0a84ff;
+        }
+
+        .forgot-password-link {
+            display: block;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+
+        .forgot-password-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Dark mode styles for forgot password link */
+        body.dark-mode .forgot-password-link {
+            color: #aaa;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <div id="user-info" style="display: none;">
+            <span id="user-email"></span>
+            <button id="sign-out-btn" onclick="handleSignOut()">Sign Out</button>
+        </div>
+
         <h1>OctoTyp</h1>
 
         <div class="dark-mode-toggle">
@@ -338,6 +640,31 @@
                 <input type="checkbox" id="dark-mode-switch" onchange="toggleDarkMode()">
                 <span class="slider"></span>
             </label>
+        </div>
+
+        <div id="auth-error" class="error-message"></div>
+
+        <div id="sign-up-form" style="display: none;">
+            <h2>Sign Up</h2>
+            <input type="email" id="sign-up-email" placeholder="Email" required>
+            <input type="password" id="sign-up-password" placeholder="Password" required>
+            <button onclick="handleSignUp()">Sign Up</button>
+            <button onclick="handleGoogleSignUp()" class="google-btn">Sign Up with Google</button>
+        </div>
+        <div id="sign-in-form" style="display: none;">
+            <h2>Sign In</h2>
+            <input type="email" id="sign-in-email" placeholder="Email" required>
+            <input type="password" id="sign-in-password" placeholder="Password" required>
+            <button onclick="handleSignIn()">Sign In</button>
+            <button onclick="handleGoogleSignIn()" class="google-btn">Sign In with Google</button>
+            <a href="#" onclick="showForgotPasswordForm()" class="forgot-password-link">Forgot Password?</a>
+        </div>
+
+        <div id="forgot-password-form" style="display: none;">
+            <h2>Reset Password</h2>
+            <input type="email" id="reset-email" placeholder="Email" required>
+            <button onclick="handleForgotPassword()">Reset Password</button>
+            <a href="#" onclick="showSignInForm()">Back to Sign In</a>
         </div>
 
         <div class="controls">
@@ -349,7 +676,9 @@
             <button id="undo-btn" onclick="undoStartOver()" style="display: none;">Undo</button>
         </div>
 
-        <div id="tweet-thread"></div>
+        <div id="general-error" class="error-message"></div>
+
+        <div id="tweet-thread" style="display: none;"></div>
 
         <button id="combine-tweets-btn" onclick="combinePosts()" style="display: none;">
             Combine Posts
@@ -376,8 +705,137 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCQFUeA6yRa0BmX6xBSPK7RJvw5Hvp1W8A",
+            authDomain: "octotyp.firebaseapp.com",
+            projectId: "octotyp",
+            storageBucket: "octotyp.appspot.com",
+            messagingSenderId: "346116172699",
+            appId: "1:346116172699:web:39e30db03db57db4d68f3e",
+            measurementId: "G-YH37E0J002"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
         const DEFAULT_CHAR_LIMIT = 280;
+
+        let currentUser = null;
+
+        function showError(message, errorType = 'auth') {
+            const errorElement = document.getElementById(errorType === 'auth' ? 'auth-error' : 'general-error');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            
+            // Hide the error message after 10 seconds (increased from 5)
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 10000);
+        }
+
+        async function handleSignUp() {
+            const email = document.getElementById('sign-up-email').value;
+            const password = document.getElementById('sign-up-password').value;
+            try {
+                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                currentUser = userCredential.user;
+                clearAuthInputs();
+                updateAuthUI();
+            } catch (error) {
+                showError("Error with signin/sign up. Please try again!");
+            }
+        }
+
+        async function handleSignIn() {
+            const email = document.getElementById('sign-in-email').value;
+            const password = document.getElementById('sign-in-password').value;
+            try {
+                const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                currentUser = userCredential.user;
+                clearAuthInputs();
+                updateAuthUI();
+            } catch (error) {
+                showError("Error with signin/sign up. Please try again!");
+            }
+        }
+
+        async function handleGoogleSignUp() {
+            try {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                const result = await firebase.auth().signInWithPopup(provider);
+                currentUser = result.user;
+                clearAuthInputs();
+                updateAuthUI();
+            } catch (error) {
+                showError("Error with signin/sign up. Please try again!");
+            }
+        }
+
+        async function handleGoogleSignIn() {
+            // For Google, sign-in and sign-up are the same process
+            await handleGoogleSignUp();
+        }
+
+        async function handleSignOut() {
+            try {
+                await firebase.auth().signOut();
+                currentUser = null;
+                clearAllDrafts(); // Add this line
+                clearAuthInputs();
+                updateAuthUI();
+            } catch (error) {
+                showError("Error signing out. Please try again!");
+            }
+        }
+
+        function updateAuthUI() {
+            const signUpForm = document.getElementById('sign-up-form');
+            const signInForm = document.getElementById('sign-in-form');
+            const forgotPasswordForm = document.getElementById('forgot-password-form');
+            const userInfo = document.getElementById('user-info');
+            const userEmail = document.getElementById('user-email');
+            const tweetThread = document.getElementById('tweet-thread');
+            const startOverBtn = document.getElementById('start-over-btn');
+            const charLimitControl = document.querySelector('.char-limit-control');
+            const combineButton = document.getElementById('combine-tweets-btn');
+
+            if (currentUser) {
+                signUpForm.style.display = 'none';
+                signInForm.style.display = 'none';
+                forgotPasswordForm.style.display = 'none';
+                userInfo.style.display = 'block';
+                userEmail.textContent = `Signed in as: ${currentUser.email}`;
+                tweetThread.style.display = 'block';
+                charLimitControl.style.display = 'block';
+                
+                // Clear existing drafts and add a fresh tweet box
+                clearAllDrafts();
+                addTweet();
+                
+                toggleStartOverButton();
+                toggleCombineButton();
+            } else {
+                signUpForm.style.display = 'block';
+                signInForm.style.display = 'block';
+                forgotPasswordForm.style.display = 'none';
+                userInfo.style.display = 'none';
+                tweetThread.style.display = 'none';
+                startOverBtn.style.display = 'none';
+                charLimitControl.style.display = 'none';
+                combineButton.style.display = 'none';
+            }
+
+            clearAuthInputs();
+        }
+
+        function clearAuthInputs() {
+            document.getElementById('sign-up-email').value = '';
+            document.getElementById('sign-up-password').value = '';
+            document.getElementById('sign-in-email').value = '';
+            document.getElementById('sign-in-password').value = '';
+        }
 
         function addTweet(button) {
             const thread = document.getElementById('tweet-thread');
@@ -645,18 +1103,58 @@
             }
         }
 
+        function clearAllDrafts() {
+            const tweetThread = document.getElementById('tweet-thread');
+            tweetThread.innerHTML = ''; // Remove all tweet boxes
+            document.getElementById('combined-post').value = ''; // Clear combined post
+            document.getElementById('combined-result').style.display = 'none'; // Hide combined result
+            document.getElementById('char-limit').value = DEFAULT_CHAR_LIMIT; // Reset char limit to default
+            toggleCombineButton();
+            toggleStartOverButton();
+        }
+
+        function showForgotPasswordForm() {
+            document.getElementById('sign-in-form').style.display = 'none';
+            document.getElementById('forgot-password-form').style.display = 'block';
+        }
+
+        function showSignInForm() {
+            document.getElementById('forgot-password-form').style.display = 'none';
+            document.getElementById('sign-in-form').style.display = 'block';
+        }
+
+        async function handleForgotPassword() {
+            const email = document.getElementById('reset-email').value;
+            try {
+                await firebase.auth().sendPasswordResetEmail(email);
+                showError("Password reset email sent. Please check your inbox.", 'auth');
+                showSignInForm();
+            } catch (error) {
+                showError("Error sending password reset email. Please try again.");
+            }
+        }
+
         // Initialize the page with default settings
         window.onload = function() {
             document.getElementById('char-limit').value = DEFAULT_CHAR_LIMIT;
-            addTweet(); // This will add the first tweet
-            toggleStartOverButton();
+            document.getElementById('start-over-btn').style.display = 'none';
+            document.querySelector('.char-limit-control').style.display = 'none';
+            document.getElementById('combine-tweets-btn').style.display = 'none';
             
             // Check for dark mode preference
             if (localStorage.getItem('darkMode') === 'true') {
                 document.body.classList.add('dark-mode');
                 document.getElementById('dark-mode-switch').checked = true;
             }
+
+            updateAuthUI();
         };
+
+        // Add this to check the auth state on page load
+        firebase.auth().onAuthStateChanged((user) => {
+            currentUser = user;
+            updateAuthUI();
+        });
     </script>
 </body>
 </html>
