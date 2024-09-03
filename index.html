@@ -707,15 +707,17 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="config.js"></script>
+    <script src="firebase.js"></script>
     <script>
-        firebase.initializeApp(firebaseConfig);
+        // Firebase is now globally available
+        const auth = firebase.auth();
 
         const DEFAULT_CHAR_LIMIT = 280;
 
         let currentUser = null;
 
         function showError(message, errorType = 'auth') {
+            console.error("Error:", message);
             const errorElement = document.getElementById(errorType === 'auth' ? 'auth-error' : 'general-error');
             errorElement.textContent = message;
             errorElement.style.display = 'block';
@@ -730,12 +732,13 @@
             const email = document.getElementById('sign-up-email').value;
             const password = document.getElementById('sign-up-password').value;
             try {
-                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 currentUser = userCredential.user;
                 clearAuthInputs();
                 updateAuthUI();
             } catch (error) {
-                showError("Error with signin/sign up. Please try again!");
+                console.error("Error signing up:", error);
+                showError(`Error signing up: ${error.message}`, 'auth');
             }
         }
 
@@ -743,19 +746,20 @@
             const email = document.getElementById('sign-in-email').value;
             const password = document.getElementById('sign-in-password').value;
             try {
-                const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 currentUser = userCredential.user;
                 clearAuthInputs();
                 updateAuthUI();
             } catch (error) {
-                showError("Error with signin/sign up. Please try again!");
+                console.error("Error signing in:", error);
+                showError(`Error signing in: ${error.message}`, 'auth');
             }
         }
 
         async function handleGoogleSignUp() {
             try {
                 const provider = new firebase.auth.GoogleAuthProvider();
-                const result = await firebase.auth().signInWithPopup(provider);
+                const result = await auth.signInWithPopup(provider);
                 currentUser = result.user;
                 clearAuthInputs();
                 updateAuthUI();
@@ -771,9 +775,9 @@
 
         async function handleSignOut() {
             try {
-                await firebase.auth().signOut();
+                await auth.signOut();
                 currentUser = null;
-                clearAllDrafts(); // Add this line
+                clearAllDrafts();
                 clearAuthInputs();
                 updateAuthUI();
             } catch (error) {
@@ -782,6 +786,7 @@
         }
 
         function updateAuthUI() {
+            console.log("updateAuthUI called");
             const signUpForm = document.getElementById('sign-up-form');
             const signInForm = document.getElementById('sign-in-form');
             const forgotPasswordForm = document.getElementById('forgot-password-form');
@@ -792,7 +797,10 @@
             const charLimitControl = document.querySelector('.char-limit-control');
             const combineButton = document.getElementById('combine-tweets-btn');
 
+            console.log("Current user:", currentUser);
+
             if (currentUser) {
+                console.log("User is signed in");
                 signUpForm.style.display = 'none';
                 signInForm.style.display = 'none';
                 forgotPasswordForm.style.display = 'none';
@@ -808,6 +816,7 @@
                 toggleStartOverButton();
                 toggleCombineButton();
             } else {
+                console.log("No user signed in");
                 signUpForm.style.display = 'block';
                 signInForm.style.display = 'block';
                 forgotPasswordForm.style.display = 'none';
@@ -1117,7 +1126,7 @@
         async function handleForgotPassword() {
             const email = document.getElementById('reset-email').value;
             try {
-                await firebase.auth().sendPasswordResetEmail(email);
+                await auth.sendPasswordResetEmail(email);
                 showError("Password reset email sent. Please check your inbox.", 'auth');
                 showSignInForm();
             } catch (error) {
@@ -1127,22 +1136,23 @@
 
         // Initialize the page with default settings
         window.onload = function() {
+            console.log("Page loaded");
             document.getElementById('char-limit').value = DEFAULT_CHAR_LIMIT;
             document.getElementById('start-over-btn').style.display = 'none';
             document.querySelector('.char-limit-control').style.display = 'none';
             document.getElementById('combine-tweets-btn').style.display = 'none';
             
-            // Check for dark mode preference
             if (localStorage.getItem('darkMode') === 'true') {
                 document.body.classList.add('dark-mode');
                 document.getElementById('dark-mode-switch').checked = true;
             }
 
+            console.log("Calling updateAuthUI");
             updateAuthUI();
         };
 
         // Add this to check the auth state on page load
-        firebase.auth().onAuthStateChanged((user) => {
+        auth.onAuthStateChanged((user) => {
             currentUser = user;
             updateAuthUI();
         });

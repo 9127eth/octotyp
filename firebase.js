@@ -1,8 +1,5 @@
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-
 const firebaseConfig = {
-    apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+    apiKey: "AIzaSyCQFUeA6yRa0BmX6xBSPK7RJvw5Hvp1W8A",
     authDomain: "octotyp.firebaseapp.com",
     projectId: "octotyp",
     storageBucket: "octotyp.appspot.com",
@@ -11,7 +8,4 @@ const firebaseConfig = {
     measurementId: "G-YH37E0J002"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-export { auth };
+firebase.initializeApp(firebaseConfig);

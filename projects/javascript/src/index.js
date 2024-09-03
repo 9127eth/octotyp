@@ -18,6 +18,8 @@ Step 4: To try out cursor on your own projects, go to the file menu (top left) a
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
+require('dotenv').config();
+
 function App() {
   return (
     <div className="App">
