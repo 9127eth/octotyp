@@ -1,3 +1,7 @@
+
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+
 const firebaseConfig = {
     apiKey: "AIzaSyCQFUeA6yRa0BmX6xBSPK7RJvw5Hvp1W8A",
     authDomain: "octotyp.firebaseapp.com",
@@ -8,4 +12,8 @@ const firebaseConfig = {
     measurementId: "G-YH37E0J002"
 };
 
-firebase.initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+
+export { auth, googleProvider, signInWithPopup };

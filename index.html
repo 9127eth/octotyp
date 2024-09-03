@@ -623,6 +623,21 @@
         body.dark-mode .forgot-password-link {
             color: #aaa;
         }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -705,13 +720,27 @@
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="firebase.js"></script>
-    <script>
-        // Firebase is now globally available
-        const auth = firebase.auth();
+    <div id="loading-indicator" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
 
+    <script type="module">
+        import { auth, googleProvider, signInWithPopup } from './firebase.js';
+        import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+        
+        window.auth = auth;
+        window.googleProvider = googleProvider;
+        window.signInWithPopup = signInWithPopup;
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+        
+        auth.onAuthStateChanged((user) => {
+            window.currentUser = user;
+            updateAuthUI();
+        });
+    </script>
+    <script>
         const DEFAULT_CHAR_LIMIT = 280;
 
         let currentUser = null;
@@ -732,13 +761,16 @@
             const email = document.getElementById('sign-up-email').value;
             const password = document.getElementById('sign-up-password').value;
             try {
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                showLoading(true);
+                const userCredential = await window.createUserWithEmailAndPassword(auth, email, password);
                 currentUser = userCredential.user;
                 clearAuthInputs();
                 updateAuthUI();
             } catch (error) {
                 console.error("Error signing up:", error);
                 showError(`Error signing up: ${error.message}`, 'auth');
+            } finally {
+                showLoading(false);
             }
         }
 
@@ -746,25 +778,31 @@
             const email = document.getElementById('sign-in-email').value;
             const password = document.getElementById('sign-in-password').value;
             try {
-                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                showLoading(true);
+                const userCredential = await window.signInWithEmailAndPassword(auth, email, password);
                 currentUser = userCredential.user;
                 clearAuthInputs();
                 updateAuthUI();
             } catch (error) {
                 console.error("Error signing in:", error);
                 showError(`Error signing in: ${error.message}`, 'auth');
+            } finally {
+                showLoading(false);
             }
         }
 
         async function handleGoogleSignUp() {
             try {
-                const provider = new firebase.auth.GoogleAuthProvider();
-                const result = await auth.signInWithPopup(provider);
+                showLoading(true);
+                const result = await window.signInWithPopup(auth, googleProvider);
                 currentUser = result.user;
                 clearAuthInputs();
                 updateAuthUI();
             } catch (error) {
-                showError("Error with signin/sign up. Please try again!");
+                console.error("Error signing in with Google:", error);
+                showError(getErrorMessage(error), 'auth');
+            } finally {
+                showLoading(false);
             }
         }
 
@@ -1134,6 +1172,31 @@
             }
         }
 
+        function getErrorMessage(error) {
+            switch (error.code) {
+                case 'auth/email-already-in-use':
+                    return 'This email is already registered. Please sign in or use a different email.';
+                case 'auth/invalid-email':
+                    return 'Invalid email address. Please check and try again.';
+                case 'auth/weak-password':
+                    return 'Password is too weak. Please use a stronger password.';
+                case 'auth/user-not-found':
+                case 'auth/wrong-password':
+                    return 'Invalid email or password. Please check and try again.';
+                default:
+                    return 'An error occurred. Please try again later.';
+            }
+        }
+
+        function showLoading(isLoading) {
+            const loadingIndicator = document.getElementById('loading-indicator');
+            if (isLoading) {
+                loadingIndicator.style.display = 'block';
+            } else {
+                loadingIndicator.style.display = 'none';
+            }
+        }
+
         // Initialize the page with default settings
         window.onload = function() {
             console.log("Page loaded");
@@ -1150,12 +1213,6 @@
             console.log("Calling updateAuthUI");
             updateAuthUI();
         };
-
-        // Add this to check the auth state on page load
-        auth.onAuthStateChanged((user) => {
-            currentUser = user;
-            updateAuthUI();
-        });
     </script>
 </body>
 </html>
