@@ -1,6 +1,6 @@
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+import { getAuth, GoogleAuthProvider, TwitterAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyCQFUeA6yRa0BmX6xBSPK7RJvw5Hvp1W8A",
@@ -15,5 +15,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
+const twitterProvider = new TwitterAuthProvider();
 
-export { auth, googleProvider, signInWithPopup };
+twitterProvider.setCustomParameters({
+  oauth_consumer_key: "Bfx7dZu3MwNDeoQz8OATe4yXH",
+  oauth_consumer_secret: "bMmVnyAA8NdZU4eAGXEVRODfRGM8GlBUM7MfgDh2OK5PblFtcs"
+});
+
+export { auth, googleProvider, twitterProvider, signInWithPopup };

@@ -723,6 +723,23 @@
             background-color: #f5f5f7;
             color: #1d1d1f;
         }
+
+        .twitter-btn {
+            background-color: #1DA1F2 !important;
+            color: #ffffff !important;
+        }
+
+        .twitter-btn:hover {
+            background-color: #0c85d0 !important;
+        }
+
+        body.dark-mode .twitter-btn {
+            background-color: #1A91DA !important;
+        }
+
+        body.dark-mode .twitter-btn:hover {
+            background-color: #0c7abf !important;
+        }
     </style>
 </head>
 <body>
@@ -752,6 +769,7 @@
             <input type="password" id="sign-up-password" placeholder="Password" required minlength="8">
             <button onclick="handleSignUp()">Sign Up</button>
             <button onclick="handleGoogleSignUp()" class="google-btn">Sign Up with Google</button>
+            <button onclick="handleTwitterSignIn()" class="twitter-btn">Sign Up with Twitter</button>
         </div>
         <div id="sign-in-form" style="display: none;">
             <h2>Sign In</h2>
@@ -760,6 +778,7 @@
                 <input type="password" id="sign-in-password" placeholder="Password" required minlength="8">
                 <button type="submit">Sign In</button>
                 <button type="button" onclick="handleGoogleSignIn()" class="google-btn">Sign In with Google</button>
+                <button type="button" onclick="handleTwitterSignIn()" class="twitter-btn">Sign In with Twitter</button>
             </form>
             <a href="#" onclick="showForgotPasswordForm()" class="forgot-password-link">Forgot Password?</a>
         </div>
@@ -815,11 +834,12 @@
     </div>
 
     <script type="module">
-        import { auth, googleProvider, signInWithPopup } from './firebase.js';
+        import { auth, googleProvider, twitterProvider, signInWithPopup } from './firebase.js';
         import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
         
         window.auth = auth;
         window.googleProvider = googleProvider;
+        window.twitterProvider = twitterProvider;
         window.signInWithPopup = signInWithPopup;
         window.signInWithEmailAndPassword = signInWithEmailAndPassword;
         window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
@@ -932,6 +952,21 @@
         async function handleGoogleSignIn() {
             // For Google, sign-in and sign-up are the same process
             await handleGoogleSignUp();
+        }
+
+        async function handleTwitterSignIn() {
+            try {
+                showLoading(true);
+                const result = await signInWithPopup(auth, twitterProvider);
+                window.currentUser = result.user;
+                clearAuthInputs();
+                updateAuthUI();
+            } catch (error) {
+                console.error("Error signing in with Twitter:", error);
+                showError(getErrorMessage(error), 'auth');
+            } finally {
+                showLoading(false);
+            }
         }
 
         async function handleSignOut() {

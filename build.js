@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const firebaseConfigContent = `
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+import { getAuth, GoogleAuthProvider, TwitterAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
 
 const firebaseConfig = {
     apiKey: "${process.env.REACT_APP_FIREBASE_API_KEY}",
@@ -18,8 +18,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
+const twitterProvider = new TwitterAuthProvider();
 
-export { auth, googleProvider, signInWithPopup };
+twitterProvider.setCustomParameters({
+  oauth_consumer_key: "${process.env.REACT_APP_TWITTER_API_KEY}",
+  oauth_consumer_secret: "${process.env.REACT_APP_TWITTER_API_SECRET}"
+});
+
+export { auth, googleProvider, twitterProvider, signInWithPopup };
 `;
 
 fs.writeFileSync('firebase.js', firebaseConfigContent);
