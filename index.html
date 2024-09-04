@@ -748,16 +748,16 @@
 
         <div id="sign-up-form" style="display: none;">
             <h2>Sign Up</h2>
-            <input type="email" id="sign-up-email" placeholder="Email" required>
-            <input type="password" id="sign-up-password" placeholder="Password" required>
+            <input type="email" id="sign-up-email" placeholder="Email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+            <input type="password" id="sign-up-password" placeholder="Password" required minlength="8">
             <button onclick="handleSignUp()">Sign Up</button>
             <button onclick="handleGoogleSignUp()" class="google-btn">Sign Up with Google</button>
         </div>
         <div id="sign-in-form" style="display: none;">
             <h2>Sign In</h2>
             <form onsubmit="handleSignIn(event)">
-                <input type="email" id="sign-in-email" placeholder="Email" required>
-                <input type="password" id="sign-in-password" placeholder="Password" required>
+                <input type="email" id="sign-in-email" placeholder="Email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                <input type="password" id="sign-in-password" placeholder="Password" required minlength="8">
                 <button type="submit">Sign In</button>
                 <button type="button" onclick="handleGoogleSignIn()" class="google-btn">Sign In with Google</button>
             </form>
@@ -844,7 +844,38 @@
             }, 10000);
         }
 
+        const rateLimiter = {
+            attempts: {},
+            maxAttempts: 5,
+            resetTime: 60000, // 1 minute
+
+            checkLimit: function(action) {
+                const now = Date.now();
+                if (!this.attempts[action]) {
+                    this.attempts[action] = { count: 1, lastAttempt: now };
+                    return true;
+                }
+
+                if (now - this.attempts[action].lastAttempt > this.resetTime) {
+                    this.attempts[action] = { count: 1, lastAttempt: now };
+                    return true;
+                }
+
+                if (this.attempts[action].count >= this.maxAttempts) {
+                    return false;
+                }
+
+                this.attempts[action].count++;
+                this.attempts[action].lastAttempt = now;
+                return true;
+            }
+        };
+
         async function handleSignUp() {
+            if (!rateLimiter.checkLimit('signUp')) {
+                showError('Too many sign-up attempts. Please try again later.', 'auth');
+                return;
+            }
             const email = document.getElementById('sign-up-email').value;
             const password = document.getElementById('sign-up-password').value;
             try {
@@ -855,14 +886,18 @@
                 updateAuthUI();
             } catch (error) {
                 console.error("Error signing up:", error);
-                showError(`Error signing up: ${error.message}`, 'auth');
+                showError(getErrorMessage(error), 'auth');
             } finally {
                 showLoading(false);
             }
         }
 
         async function handleSignIn(event) {
-            event.preventDefault(); // Prevent the form from submitting traditionally
+            event.preventDefault();
+            if (!rateLimiter.checkLimit('signIn')) {
+                showError('Too many sign-in attempts. Please try again later.', 'auth');
+                return;
+            }
             const email = document.getElementById('sign-in-email').value;
             const password = document.getElementById('sign-in-password').value;
             try {
@@ -873,7 +908,7 @@
                 updateAuthUI();
             } catch (error) {
                 console.error("Error signing in:", error);
-                showError(`Error signing in: ${error.message}`, 'auth');
+                showError(getErrorMessage(error), 'auth');
             } finally {
                 showLoading(false);
             }
@@ -1292,6 +1327,14 @@
             }
         }
 
+        function loadGoogleSignInScript() {
+            const script = document.createElement('script');
+            script.src = 'https://apis.google.com/js/platform.js';
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        }
+
         // Initialize the page with default settings
         window.onload = function() {
             console.log("Page loaded");
@@ -1307,6 +1350,12 @@
 
             console.log("Calling updateAuthUI");
             updateAuthUI();
+
+            // Lazy load Google Sign-In script
+            const googleButtons = document.querySelectorAll('.google-btn');
+            googleButtons.forEach(button => {
+                button.addEventListener('mouseover', loadGoogleSignInScript, { once: true });
+            });
         };
     </script>
 </body>
