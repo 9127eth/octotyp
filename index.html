@@ -959,6 +959,10 @@
                 showLoading(true);
                 const result = await signInWithPopup(auth, twitterProvider);
                 window.currentUser = result.user;
+                // Get the Twitter screen name (handle)
+                const twitterHandle = result.user.reloadUserInfo.screenName;
+                // Store the Twitter handle in localStorage
+                localStorage.setItem('twitterHandle', twitterHandle);
                 clearAuthInputs();
                 updateAuthUI();
             } catch (error) {
@@ -973,6 +977,7 @@
             try {
                 await auth.signOut();
                 window.currentUser = null;
+                localStorage.removeItem('twitterHandle'); // Clear the stored Twitter handle
                 clearAllDrafts();
                 clearAuthInputs();
                 updateAuthUI();
@@ -1001,7 +1006,15 @@
                 signInForm.style.display = 'none';
                 forgotPasswordForm.style.display = 'none';
                 userInfo.style.display = 'block';
-                userEmail.textContent = `Signed in as: ${window.currentUser.email}`;
+                
+                // Check if the user signed in with Twitter
+                const twitterHandle = localStorage.getItem('twitterHandle');
+                if (twitterHandle) {
+                    userEmail.textContent = `Signed in as: @${twitterHandle}`;
+                } else {
+                    userEmail.textContent = `Signed in as: ${window.currentUser.email}`;
+                }
+                
                 tweetThread.style.display = 'block';
                 charLimitControl.style.display = 'block';
                 
