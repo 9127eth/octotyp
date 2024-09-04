@@ -28,8 +28,9 @@
         }
 
         h1 {
-            text-align: center;
+            text-align: left;
             margin-bottom: 30px;
+            padding-left: 20px;
         }
 
         .tweet-box {
@@ -959,10 +960,27 @@
                 showLoading(true);
                 const result = await signInWithPopup(auth, twitterProvider);
                 window.currentUser = result.user;
-                // Get the Twitter screen name (handle)
-                const twitterHandle = result.user.reloadUserInfo.screenName;
-                // Store the Twitter handle in localStorage
-                localStorage.setItem('twitterHandle', twitterHandle);
+                
+                // Log the entire result object to inspect its structure
+                console.log("Twitter sign-in result:", result);
+                console.log("User object:", result.user);
+                console.log("Additional user info:", result.additionalUserInfo);
+
+                // Try different possible locations for the Twitter handle
+                const twitterHandle = 
+                    result.additionalUserInfo?.username ||
+                    result.user?.reloadUserInfo?.screenName ||
+                    result.user?.providerData[0]?.screenName ||
+                    result.user?.displayName;
+
+                console.log("Retrieved Twitter handle:", twitterHandle);
+
+                if (twitterHandle) {
+                    localStorage.setItem('twitterHandle', twitterHandle);
+                } else {
+                    console.error("Could not retrieve Twitter handle");
+                }
+
                 clearAuthInputs();
                 updateAuthUI();
             } catch (error) {
@@ -1007,12 +1025,18 @@
                 forgotPasswordForm.style.display = 'none';
                 userInfo.style.display = 'block';
                 
-                // Check if the user signed in with Twitter
                 const twitterHandle = localStorage.getItem('twitterHandle');
+                const displayName = window.currentUser.displayName;
+                const email = window.currentUser.email;
+
                 if (twitterHandle) {
                     userEmail.textContent = `Signed in as: @${twitterHandle}`;
+                } else if (displayName) {
+                    userEmail.textContent = `Signed in as: ${displayName}`;
+                } else if (email) {
+                    userEmail.textContent = `Signed in as: ${email}`;
                 } else {
-                    userEmail.textContent = `Signed in as: ${window.currentUser.email}`;
+                    userEmail.textContent = `Signed in`;
                 }
                 
                 tweetThread.style.display = 'block';
