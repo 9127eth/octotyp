@@ -796,8 +796,7 @@
                 <label for="char-limit">Character Limit:</label>
                 <input type="number" id="char-limit" value="280">
             </div>
-            <button id="start-over-btn" onclick="confirmStartOver()" style="display: none;">Start Over</button>
-            <button id="undo-btn" onclick="undoStartOver()" style="display: none;">Undo</button>
+            <button id="create-new-btn" onclick="createNew()">Create New</button>
         </div>
 
         <div id="general-error" class="error-message"></div>
@@ -819,616 +818,555 @@
             </div>
         </div>
 
-        <!-- Add this modal for confirmation -->
-        <div id="confirmation-modal" class="modal" style="display: none;">
-            <div class="modal-content">
-                <p>Are you sure you want to start over? All unsaved data will be lost.</p>
-                <button onclick="startOver()">Yes, Start Over</button>
-                <button onclick="closeModal()">Cancel</button>
-            </div>
+        <div id="loading-indicator" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+            <div class="spinner"></div>
+            <p>Loading...</p>
         </div>
-    </div>
 
-    <div id="loading-indicator" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
-        <div class="spinner"></div>
-        <p>Loading...</p>
-    </div>
-
-    <script type="module">
-        import { auth, googleProvider, twitterProvider, signInWithPopup } from './firebase.js';
-        import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
-        
-        window.auth = auth;
-        window.googleProvider = googleProvider;
-        window.twitterProvider = twitterProvider;
-        window.signInWithPopup = signInWithPopup;
-        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
-        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
-        
-        onAuthStateChanged(auth, (user) => {
-            window.currentUser = user;
-            updateAuthUI();
-        });
-    </script>
-    <script>
-        const DEFAULT_CHAR_LIMIT = 280;
-
-        function showError(message, errorType = 'auth') {
-            console.error("Error:", message);
-            const errorElement = document.getElementById(errorType === 'auth' ? 'auth-error' : 'general-error');
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
+        <script type="module">
+            import { auth, googleProvider, twitterProvider, signInWithPopup } from './firebase.js';
+            import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
             
-            // Hide the error message after 10 seconds (increased from 5)
-            setTimeout(() => {
-                errorElement.style.display = 'none';
-            }, 10000);
-        }
-
-        const rateLimiter = {
-            attempts: {},
-            maxAttempts: 5,
-            resetTime: 60000, // 1 minute
-
-            checkLimit: function(action) {
-                const now = Date.now();
-                if (!this.attempts[action]) {
-                    this.attempts[action] = { count: 1, lastAttempt: now };
-                    return true;
-                }
-
-                if (now - this.attempts[action].lastAttempt > this.resetTime) {
-                    this.attempts[action] = { count: 1, lastAttempt: now };
-                    return true;
-                }
-
-                if (this.attempts[action].count >= this.maxAttempts) {
-                    return false;
-                }
-
-                this.attempts[action].count++;
-                this.attempts[action].lastAttempt = now;
-                return true;
-            }
-        };
-
-        async function handleSignUp() {
-            if (!rateLimiter.checkLimit('signUp')) {
-                showError('Too many sign-up attempts. Please try again later.', 'auth');
-                return;
-            }
-            const email = document.getElementById('sign-up-email').value;
-            const password = document.getElementById('sign-up-password').value;
-            try {
-                showLoading(true);
-                const userCredential = await window.createUserWithEmailAndPassword(auth, email, password);
-                window.currentUser = userCredential.user;
-                clearAuthInputs();
+            window.auth = auth;
+            window.googleProvider = googleProvider;
+            window.twitterProvider = twitterProvider;
+            window.signInWithPopup = signInWithPopup;
+            window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+            window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+            
+            onAuthStateChanged(auth, (user) => {
+                window.currentUser = user;
                 updateAuthUI();
-            } catch (error) {
-                console.error("Error signing up:", error);
-                showError(getErrorMessage(error), 'auth');
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        async function handleSignIn(event) {
-            event.preventDefault();
-            if (!rateLimiter.checkLimit('signIn')) {
-                showError('Too many sign-in attempts. Please try again later.', 'auth');
-                return;
-            }
-            const email = document.getElementById('sign-in-email').value;
-            const password = document.getElementById('sign-in-password').value;
-            try {
-                showLoading(true);
-                const userCredential = await window.signInWithEmailAndPassword(auth, email, password);
-                window.currentUser = userCredential.user;
-                clearAuthInputs();
-                updateAuthUI();
-            } catch (error) {
-                console.error("Error signing in:", error);
-                showError(getErrorMessage(error), 'auth');
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        async function handleGoogleSignUp() {
-            try {
-                showLoading(true);
-                const result = await window.signInWithPopup(auth, googleProvider);
-                window.currentUser = result.user;
-                clearAuthInputs();
-                updateAuthUI();
-            } catch (error) {
-                console.error("Error signing in with Google:", error);
-                showError(getErrorMessage(error), 'auth');
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        async function handleGoogleSignIn() {
-            // For Google, sign-in and sign-up are the same process
-            await handleGoogleSignUp();
-        }
-
-        async function handleTwitterSignIn() {
-            try {
-                showLoading(true);
-                const result = await signInWithPopup(auth, twitterProvider);
-                window.currentUser = result.user;
-                
-                // Log the entire result object to inspect its structure
-                console.log("Twitter sign-in result:", result);
-                console.log("User object:", result.user);
-                console.log("Additional user info:", result.additionalUserInfo);
-
-                // Try different possible locations for the Twitter handle
-                const twitterHandle = 
-                    result.additionalUserInfo?.username ||
-                    result.user?.reloadUserInfo?.screenName ||
-                    result.user?.providerData[0]?.screenName ||
-                    result.user?.displayName;
-
-                console.log("Retrieved Twitter handle:", twitterHandle);
-
-                if (twitterHandle) {
-                    localStorage.setItem('twitterHandle', twitterHandle);
-                } else {
-                    console.error("Could not retrieve Twitter handle");
-                }
-
-                clearAuthInputs();
-                updateAuthUI();
-            } catch (error) {
-                console.error("Error signing in with Twitter:", error);
-                showError(getErrorMessage(error), 'auth');
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        async function handleSignOut() {
-            try {
-                await auth.signOut();
-                window.currentUser = null;
-                localStorage.removeItem('twitterHandle'); // Clear the stored Twitter handle
-                clearAllDrafts();
-                clearAuthInputs();
-                updateAuthUI();
-            } catch (error) {
-                showError("Error signing out. Please try again!");
-            }
-        }
-
-        function updateAuthUI() {
-            console.log("updateAuthUI called");
-            const signUpForm = document.getElementById('sign-up-form');
-            const signInForm = document.getElementById('sign-in-form');
-            const forgotPasswordForm = document.getElementById('forgot-password-form');
-            const userInfo = document.getElementById('user-info');
-            const userEmail = document.getElementById('user-email');
-            const tweetThread = document.getElementById('tweet-thread');
-            const startOverBtn = document.getElementById('start-over-btn');
-            const charLimitControl = document.querySelector('.char-limit-control');
-            const combineButton = document.getElementById('combine-tweets-btn');
-
-            console.log("Current user:", window.currentUser);
-
-            if (window.currentUser) {
-                console.log("User is signed in");
-                signUpForm.style.display = 'none';
-                signInForm.style.display = 'none';
-                forgotPasswordForm.style.display = 'none';
-                userInfo.style.display = 'block';
-                
-                const twitterHandle = localStorage.getItem('twitterHandle');
-                const displayName = window.currentUser.displayName;
-                const email = window.currentUser.email;
-
-                if (twitterHandle) {
-                    userEmail.textContent = `Signed in as: @${twitterHandle}`;
-                } else if (displayName) {
-                    userEmail.textContent = `Signed in as: ${displayName}`;
-                } else if (email) {
-                    userEmail.textContent = `Signed in as: ${email}`;
-                } else {
-                    userEmail.textContent = `Signed in`;
-                }
-                
-                tweetThread.style.display = 'block';
-                charLimitControl.style.display = 'block';
-                
-                // Clear existing drafts and add a fresh tweet box
-                clearAllDrafts();
-                addTweet();
-                
-                toggleStartOverButton();
-                toggleCombineButton();
-            } else {
-                console.log("No user signed in");
-                signUpForm.style.display = 'block';
-                signInForm.style.display = 'block';
-                forgotPasswordForm.style.display = 'none';
-                userInfo.style.display = 'none';
-                tweetThread.style.display = 'none';
-                startOverBtn.style.display = 'none';
-                charLimitControl.style.display = 'none';
-                combineButton.style.display = 'none';
-            }
-
-            clearAuthInputs();
-        }
-
-        function clearAuthInputs() {
-            document.getElementById('sign-up-email').value = '';
-            document.getElementById('sign-up-password').value = '';
-            document.getElementById('sign-in-email').value = '';
-            document.getElementById('sign-in-password').value = '';
-        }
-
-        function addTweet(button) {
-            const thread = document.getElementById('tweet-thread');
-            const charLimit = document.getElementById('char-limit').value;
-            const tweetBox = document.createElement('div');
-            tweetBox.className = 'tweet-box';
-            
-            const isFirstTweet = thread.children.length === 0;
-            const placeholderText = isFirstTweet ? "Start here..." : "Continue draft...";
-            
-            tweetBox.innerHTML = `
-                <textarea oninput="updateCharCount(this)" data-limit="${charLimit}" placeholder="${placeholderText}"></textarea>
-                <div class="tweet-info">
-                    <span class="character-count">0/${charLimit}</span>
-                    <span class="thread-count"></span>
-                    <label class="url-checkbox">
-                        <input type="checkbox" onchange="updateCharCount(this.closest('.tweet-box').querySelector('textarea'))">
-                        Adding a url for X?
-                        <span class="tooltip-icon" data-tooltip="Checking this box will subtract\n24 characters to account\nfor adding a URL\nin a tweet.">i</span>
-                    </label>
-                </div>
-                <div class="tweet-controls">
-                    <div class="tweet-controls-left">
-                        <button onclick="addTweet(this)">Add Tweet</button>
-                        ${isFirstTweet ? '' : '<button class="remove-btn" onclick="removeTweet(this)">Remove</button>'}
-                    </div>
-                    <div class="tweet-controls-right">
-                        <span class="copy-confirm">Copied!</span>
-                        <button class="copy-btn" onclick="copyToClipboard(this.closest('.tweet-box').querySelector('textarea'))">Copy</button>
-                    </div>
-                </div>
-                ${isFirstTweet ? '' : `
-                <div class="move-controls">
-                    <button onclick="moveTweetUp(this)">▲</button>
-                    <button onclick="moveTweetDown(this)">▼</button>
-                </div>
-                `}
-            `;
-            
-            if (button) {
-                const currentTweetBox = button.closest('.tweet-box');
-                currentTweetBox.insertAdjacentElement('afterend', tweetBox);
-            } else {
-                thread.appendChild(tweetBox);
-            }
-            
-            updateThreadCounts();
-            toggleCombineButton();
-            toggleStartOverButton();
-            
-            // Focus on the new textarea
-            const newTextarea = tweetBox.querySelector('textarea');
-            newTextarea.focus();
-
-            // Add event listener to hide undo button on first keypress
-            newTextarea.addEventListener('keydown', function onFirstKeydown() {
-                document.getElementById('undo-btn').style.display = 'none';
-                this.removeEventListener('keydown', onFirstKeydown);
-            }, { once: true });
-        }
-
-        function updateThreadCounts() {
-            const thread = document.getElementById('tweet-thread');
-            const tweetBoxes = thread.querySelectorAll('.tweet-box');
-            const totalTweets = tweetBoxes.length;
-
-            tweetBoxes.forEach((box, index) => {
-                const threadCountSpan = box.querySelector('.thread-count');
-                threadCountSpan.textContent = `🧵 ${index + 1}/${totalTweets}`;
             });
-        }
+        </script>
+        <script>
+            const DEFAULT_CHAR_LIMIT = 280;
 
-        function removeTweet(button) {
-            const tweetBox = button.closest('.tweet-box');
-            const thread = document.getElementById('tweet-thread');
-            
-            if (thread.children.length > 1) {
-                tweetBox.remove();
-            } else {
-                // If it's the last tweet, clear its content instead of removing it
-                const textarea = tweetBox.querySelector('textarea');
-                textarea.value = '';
-                updateCharCount(textarea);
-            }
-            
-            updateThreadCounts();
-            toggleCombineButton();
-            toggleStartOverButton();
-        }
-
-        function toggleCombineButton() {
-            const tweetBoxes = document.querySelectorAll('.tweet-box');
-            const combineButton = document.getElementById('combine-tweets-btn');
-            combineButton.style.display = tweetBoxes.length > 1 ? 'inline-block' : 'none';
-        }
-
-        function toggleStartOverButton() {
-            const tweetBoxes = document.querySelectorAll('.tweet-box');
-            const startOverBtn = document.getElementById('start-over-btn');
-            startOverBtn.style.display = tweetBoxes.length > 0 ? 'inline-block' : 'none';
-        }
-
-        function updateCharCount(textarea) {
-            const tweetBox = textarea.closest('.tweet-box');
-            const urlCheckbox = tweetBox.querySelector('.url-checkbox input');
-            const charCount = textarea.value.length + (urlCheckbox.checked ? 24 : 0);
-            const charLimit = parseInt(textarea.dataset.limit);
-            const countDisplay = textarea.nextElementSibling.querySelector('.character-count');
-            countDisplay.textContent = `${charCount}/${charLimit}`;
-
-            if (charCount <= charLimit * 0.95) {
-                textarea.style.backgroundColor = 'rgba(144, 238, 144, 0.3)'; // Light green
-            } else if (charCount <= charLimit) {
-                textarea.style.backgroundColor = 'rgba(255, 255, 0, 0.3)'; // Bright yellow
-            } else {
-                textarea.style.backgroundColor = 'rgba(255, 0, 0, 0.2)'; // Bright red
+            function showError(message, errorType = 'auth') {
+                console.error("Error:", message);
+                const errorElement = document.getElementById(errorType === 'auth' ? 'auth-error' : 'general-error');
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+                
+                // Hide the error message after 10 seconds (increased from 5)
+                setTimeout(() => {
+                    errorElement.style.display = 'none';
+                }, 10000);
             }
 
-            // Hide undo button when typing starts
-            document.getElementById('undo-btn').style.display = 'none';
-        }
+            const rateLimiter = {
+                attempts: {},
+                maxAttempts: 5,
+                resetTime: 60000, // 1 minute
 
-        function copyToClipboard(element) {
-            let textToCopy;
-            if (typeof element === 'string') {
-                element = document.getElementById(element);
-            }
-            
-            if (element.tagName === 'TEXTAREA') {
-                textToCopy = element.value;
-            } else {
-                textToCopy = element.textContent;
-            }
-            
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                // Show the "Copied!" confirmation
-                const confirmSpan = element.closest('.tweet-controls-right').querySelector('.copy-confirm');
-                if (confirmSpan) {
-                    confirmSpan.classList.add('show');
-                    
-                    // Hide the confirmation after 2 seconds
-                    setTimeout(() => {
-                        confirmSpan.classList.remove('show');
-                    }, 2000);
-                }
-            }).catch(err => {
-                console.error('Failed to copy text: ', err);
-            });
-        }
-
-        function combinePosts() {
-            const tweetContainers = document.querySelectorAll('.tweet-box');
-            let combinedText = '';
-
-            tweetContainers.forEach((container, index) => {
-                const textarea = container.querySelector('textarea');
-                if (textarea.value.trim() !== '') {
-                    combinedText += textarea.value.trim();
-                    if (index < tweetContainers.length - 1) {
-                        combinedText += '\n\n';
+                checkLimit: function(action) {
+                    const now = Date.now();
+                    if (!this.attempts[action]) {
+                        this.attempts[action] = { count: 1, lastAttempt: now };
+                        return true;
                     }
+
+                    if (now - this.attempts[action].lastAttempt > this.resetTime) {
+                        this.attempts[action] = { count: 1, lastAttempt: now };
+                        return true;
+                    }
+
+                    if (this.attempts[action].count >= this.maxAttempts) {
+                        return false;
+                    }
+
+                    this.attempts[action].count++;
+                    this.attempts[action].lastAttempt = now;
+                    return true;
                 }
-            });
-
-            const combinedTextarea = document.getElementById('combined-post');
-            combinedTextarea.value = combinedText;
-            autoResize(combinedTextarea);
-
-            document.getElementById('combined-result').style.display = 'block';
-        }
-
-        function autoResize(textarea) {
-            textarea.style.height = 'auto';
-            textarea.style.height = textarea.scrollHeight + 'px';
-        }
-
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-        }
-
-        let previousState = null;
-
-        function confirmStartOver() {
-            document.getElementById('confirmation-modal').style.display = 'block';
-        }
-
-        function closeModal() {
-            document.getElementById('confirmation-modal').style.display = 'none';
-        }
-
-        function startOver() {
-            // Save current state for undo functionality
-            previousState = {
-                tweets: Array.from(document.querySelectorAll('.tweet-box textarea')).map(ta => ta.value),
-                charLimit: document.getElementById('char-limit').value
             };
 
-            // Clear all tweets except the first one
-            const tweetThread = document.getElementById('tweet-thread');
-            while (tweetThread.children.length > 1) {
-                tweetThread.removeChild(tweetThread.lastChild);
+            async function handleSignUp() {
+                if (!rateLimiter.checkLimit('signUp')) {
+                    showError('Too many sign-up attempts. Please try again later.', 'auth');
+                    return;
+                }
+                const email = document.getElementById('sign-up-email').value;
+                const password = document.getElementById('sign-up-password').value;
+                try {
+                    showLoading(true);
+                    const userCredential = await window.createUserWithEmailAndPassword(auth, email, password);
+                    window.currentUser = userCredential.user;
+                    clearAuthInputs();
+                    updateAuthUI();
+                } catch (error) {
+                    console.error("Error signing up:", error);
+                    showError(getErrorMessage(error), 'auth');
+                } finally {
+                    showLoading(false);
+                }
             }
 
-            // Clear the first tweet's content
-            const firstTweet = tweetThread.firstChild.querySelector('textarea');
-            firstTweet.value = '';
-            updateCharCount(firstTweet);
+            async function handleSignIn(event) {
+                event.preventDefault();
+                if (!rateLimiter.checkLimit('signIn')) {
+                    showError('Too many sign-in attempts. Please try again later.', 'auth');
+                    return;
+                }
+                const email = document.getElementById('sign-in-email').value;
+                const password = document.getElementById('sign-in-password').value;
+                try {
+                    showLoading(true);
+                    const userCredential = await window.signInWithEmailAndPassword(auth, email, password);
+                    window.currentUser = userCredential.user;
+                    clearAuthInputs();
+                    updateAuthUI();
+                } catch (error) {
+                    console.error("Error signing in:", error);
+                    showError(getErrorMessage(error), 'auth');
+                } finally {
+                    showLoading(false);
+                }
+            }
 
-            // Reset character limit to default
-            document.getElementById('char-limit').value = DEFAULT_CHAR_LIMIT;
+            async function handleGoogleSignUp() {
+                try {
+                    showLoading(true);
+                    const result = await window.signInWithPopup(auth, googleProvider);
+                    window.currentUser = result.user;
+                    clearAuthInputs();
+                    updateAuthUI();
+                } catch (error) {
+                    console.error("Error signing in with Google:", error);
+                    showError(getErrorMessage(error), 'auth');
+                } finally {
+                    showLoading(false);
+                }
+            }
 
-            // Hide combine button and combined result
-            document.getElementById('combine-tweets-btn').style.display = 'none';
-            document.getElementById('combined-result').style.display = 'none';
+            async function handleGoogleSignIn() {
+                // For Google, sign-in and sign-up are the same process
+                await handleGoogleSignUp();
+            }
 
-            closeModal();
+            async function handleTwitterSignIn() {
+                try {
+                    showLoading(true);
+                    const result = await signInWithPopup(auth, twitterProvider);
+                    window.currentUser = result.user;
+                    
+                    // Log the entire result object to inspect its structure
+                    console.log("Twitter sign-in result:", result);
+                    console.log("User object:", result.user);
+                    console.log("Additional user info:", result.additionalUserInfo);
 
-            // Show undo button
-            document.getElementById('undo-btn').style.display = 'inline-block';
-            toggleStartOverButton();
+                    // Try different possible locations for the Twitter handle
+                    const twitterHandle = 
+                        result.additionalUserInfo?.username ||
+                        result.user?.reloadUserInfo?.screenName ||
+                        result.user?.providerData[0]?.screenName ||
+                        result.user?.displayName;
 
-            updateThreadCounts();
-        }
+                    console.log("Retrieved Twitter handle:", twitterHandle);
 
-        function undoStartOver() {
-            if (previousState) {
-                // Restore character limit
-                document.getElementById('char-limit').value = previousState.charLimit;
+                    if (twitterHandle) {
+                        localStorage.setItem('twitterHandle', twitterHandle);
+                    } else {
+                        console.error("Could not retrieve Twitter handle");
+                    }
 
-                // Clear existing tweets
+                    clearAuthInputs();
+                    updateAuthUI();
+                } catch (error) {
+                    console.error("Error signing in with Twitter:", error);
+                    showError(getErrorMessage(error), 'auth');
+                } finally {
+                    showLoading(false);
+                }
+            }
+
+            async function handleSignOut() {
+                try {
+                    await auth.signOut();
+                    window.currentUser = null;
+                    localStorage.removeItem('twitterHandle'); // Clear the stored Twitter handle
+                    clearAllDrafts();
+                    clearAuthInputs();
+                    updateAuthUI();
+                } catch (error) {
+                    showError("Error signing out. Please try again!");
+                }
+            }
+
+            function updateAuthUI() {
+                console.log("updateAuthUI called");
+                const signUpForm = document.getElementById('sign-up-form');
+                const signInForm = document.getElementById('sign-in-form');
+                const forgotPasswordForm = document.getElementById('forgot-password-form');
+                const userInfo = document.getElementById('user-info');
+                const userEmail = document.getElementById('user-email');
                 const tweetThread = document.getElementById('tweet-thread');
-                tweetThread.innerHTML = '';
+                const createNewBtn = document.getElementById('create-new-btn');
+                const charLimitControl = document.querySelector('.char-limit-control');
+                const combineButton = document.getElementById('combine-tweets-btn');
 
-                // Restore previous tweets
-                previousState.tweets.forEach((tweetContent, index) => {
+                console.log("Current user:", window.currentUser);
+
+                if (window.currentUser) {
+                    console.log("User is signed in");
+                    signUpForm.style.display = 'none';
+                    signInForm.style.display = 'none';
+                    forgotPasswordForm.style.display = 'none';
+                    userInfo.style.display = 'block';
+                    
+                    const twitterHandle = localStorage.getItem('twitterHandle');
+                    const displayName = window.currentUser.displayName;
+                    const email = window.currentUser.email;
+
+                    if (twitterHandle) {
+                        userEmail.textContent = `Signed in as: @${twitterHandle}`;
+                    } else if (displayName) {
+                        userEmail.textContent = `Signed in as: ${displayName}`;
+                    } else if (email) {
+                        userEmail.textContent = `Signed in as: ${email}`;
+                    } else {
+                        userEmail.textContent = `Signed in`;
+                    }
+                    
+                    tweetThread.style.display = 'block';
+                    charLimitControl.style.display = 'block';
+                    
+                    // Clear existing drafts and add a fresh tweet box
+                    clearAllDrafts();
                     addTweet();
-                    const textarea = tweetThread.children[index].querySelector('textarea');
-                    textarea.value = tweetContent;
+                    
+                    toggleCreateNewButton();
+                    toggleCombineButton();
+                } else {
+                    console.log("No user signed in");
+                    signUpForm.style.display = 'block';
+                    signInForm.style.display = 'block';
+                    forgotPasswordForm.style.display = 'none';
+                    userInfo.style.display = 'none';
+                    tweetThread.style.display = 'none';
+                    createNewBtn.style.display = 'none';
+                    charLimitControl.style.display = 'none';
+                    combineButton.style.display = 'none';
+                }
+
+                clearAuthInputs();
+            }
+
+            function clearAuthInputs() {
+                document.getElementById('sign-up-email').value = '';
+                document.getElementById('sign-up-password').value = '';
+                document.getElementById('sign-in-email').value = '';
+                document.getElementById('sign-in-password').value = '';
+            }
+
+            function addTweet(button) {
+                const thread = document.getElementById('tweet-thread');
+                const charLimit = document.getElementById('char-limit').value;
+                const tweetBox = document.createElement('div');
+                tweetBox.className = 'tweet-box';
+                
+                const isFirstTweet = thread.children.length === 0;
+                const placeholderText = isFirstTweet ? "Start here..." : "Continue draft...";
+                
+                tweetBox.innerHTML = `
+                    <textarea oninput="updateCharCount(this)" data-limit="${charLimit}" placeholder="${placeholderText}"></textarea>
+                    <div class="tweet-info">
+                        <span class="character-count">0/${charLimit}</span>
+                        <span class="thread-count"></span>
+                        <label class="url-checkbox">
+                            <input type="checkbox" onchange="updateCharCount(this.closest('.tweet-box').querySelector('textarea'))">
+                            Adding a url for X?
+                            <span class="tooltip-icon" data-tooltip="Checking this box will subtract\n24 characters to account\nfor adding a URL\nin a tweet.">i</span>
+                        </label>
+                    </div>
+                    <div class="tweet-controls">
+                        <div class="tweet-controls-left">
+                            <button onclick="addTweet(this)">Add Tweet</button>
+                            ${isFirstTweet ? '' : '<button class="remove-btn" onclick="removeTweet(this)">Remove</button>'}
+                        </div>
+                        <div class="tweet-controls-right">
+                            <span class="copy-confirm">Copied!</span>
+                            <button class="copy-btn" onclick="copyToClipboard(this.closest('.tweet-box').querySelector('textarea'))">Copy</button>
+                        </div>
+                    </div>
+                    ${isFirstTweet ? '' : `
+                    <div class="move-controls">
+                        <button onclick="moveTweetUp(this)">▲</button>
+                        <button onclick="moveTweetDown(this)">▼</button>
+                    </div>
+                    `}
+                `;
+                
+                if (button) {
+                    const currentTweetBox = button.closest('.tweet-box');
+                    currentTweetBox.insertAdjacentElement('afterend', tweetBox);
+                } else {
+                    thread.appendChild(tweetBox);
+                }
+                
+                updateThreadCounts();
+                toggleCombineButton();
+                toggleCreateNewButton();
+                
+                // Focus on the new textarea
+                const newTextarea = tweetBox.querySelector('textarea');
+                resetTextareaState(newTextarea);
+                newTextarea.focus();
+            }
+
+            function updateThreadCounts() {
+                const thread = document.getElementById('tweet-thread');
+                const tweetBoxes = thread.querySelectorAll('.tweet-box');
+                const totalTweets = tweetBoxes.length;
+
+                tweetBoxes.forEach((box, index) => {
+                    const threadCountSpan = box.querySelector('.thread-count');
+                    threadCountSpan.textContent = `🧵 ${index + 1}/${totalTweets}`;
+                });
+            }
+
+            function removeTweet(button) {
+                const tweetBox = button.closest('.tweet-box');
+                const thread = document.getElementById('tweet-thread');
+                
+                if (thread.children.length > 1) {
+                    tweetBox.remove();
+                } else {
+                    // If it's the last tweet, clear its content instead of removing it
+                    const textarea = tweetBox.querySelector('textarea');
+                    textarea.value = '';
                     updateCharCount(textarea);
+                }
+                
+                updateThreadCounts();
+                toggleCombineButton();
+                toggleCreateNewButton();
+            }
+
+            function toggleCombineButton() {
+                const tweetBoxes = document.querySelectorAll('.tweet-box');
+                const combineButton = document.getElementById('combine-tweets-btn');
+                combineButton.style.display = tweetBoxes.length > 1 ? 'inline-block' : 'none';
+            }
+
+            function toggleCreateNewButton() {
+                const tweetBoxes = document.querySelectorAll('.tweet-box');
+                const createNewBtn = document.getElementById('create-new-btn');
+                createNewBtn.style.display = tweetBoxes.length > 0 ? 'inline-block' : 'none';
+            }
+
+            function updateCharCount(textarea) {
+                const tweetBox = textarea.closest('.tweet-box');
+                const urlCheckbox = tweetBox.querySelector('.url-checkbox input');
+                const charCount = textarea.value.length + (urlCheckbox.checked ? 24 : 0);
+                const charLimit = parseInt(textarea.dataset.limit);
+                const countDisplay = textarea.nextElementSibling.querySelector('.character-count');
+                countDisplay.textContent = `${charCount}/${charLimit}`;
+
+                if (charCount === 0) {
+                    textarea.style.backgroundColor = ''; // Neutral state
+                } else if (charCount <= charLimit * 0.95) {
+                    textarea.style.backgroundColor = 'rgba(144, 238, 144, 0.3)'; // Light green
+                } else if (charCount <= charLimit) {
+                    textarea.style.backgroundColor = 'rgba(255, 255, 0, 0.3)'; // Bright yellow
+                } else {
+                    textarea.style.backgroundColor = 'rgba(255, 0, 0, 0.2)'; // Bright red
+                }
+            }
+
+            function copyToClipboard(element) {
+                let textToCopy;
+                if (typeof element === 'string') {
+                    element = document.getElementById(element);
+                }
+                
+                if (element.tagName === 'TEXTAREA') {
+                    textToCopy = element.value;
+                } else {
+                    textToCopy = element.textContent;
+                }
+                
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    // Show the "Copied!" confirmation
+                    const confirmSpan = element.closest('.tweet-controls-right').querySelector('.copy-confirm');
+                    if (confirmSpan) {
+                        confirmSpan.classList.add('show');
+                        
+                        // Hide the confirmation after 2 seconds
+                        setTimeout(() => {
+                            confirmSpan.classList.remove('show');
+                        }, 2000);
+                    }
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                });
+            }
+
+            function combinePosts() {
+                const tweetContainers = document.querySelectorAll('.tweet-box');
+                let combinedText = '';
+
+                tweetContainers.forEach((container, index) => {
+                    const textarea = container.querySelector('textarea');
+                    if (textarea.value.trim() !== '') {
+                        combinedText += textarea.value.trim();
+                        if (index < tweetContainers.length - 1) {
+                            combinedText += '\n\n';
+                        }
+                    }
                 });
 
-                // Reset previousState
-                previousState = null;
+                const combinedTextarea = document.getElementById('combined-post');
+                combinedTextarea.value = combinedText;
+                autoResize(combinedTextarea);
 
-                // Hide undo button
-                document.getElementById('undo-btn').style.display = 'none';
+                document.getElementById('combined-result').style.display = 'block';
+            }
 
-                // Show combine button if necessary
+            function autoResize(textarea) {
+                textarea.style.height = 'auto';
+                textarea.style.height = textarea.scrollHeight + 'px';
+            }
+
+            function toggleDarkMode() {
+                document.body.classList.toggle('dark-mode');
+                localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+            }
+
+            function createNew() {
+                // Clear all tweets except the first one
+                const tweetThread = document.getElementById('tweet-thread');
+                while (tweetThread.children.length > 1) {
+                    tweetThread.removeChild(tweetThread.lastChild);
+                }
+
+                // Clear the first tweet's content and reset its state
+                const firstTweet = tweetThread.firstChild.querySelector('textarea');
+                firstTweet.value = '';
+                resetTextareaState(firstTweet);
+
+                // Reset character limit to default
+                document.getElementById('char-limit').value = DEFAULT_CHAR_LIMIT;
+
+                // Hide combine button and combined result
+                document.getElementById('combine-tweets-btn').style.display = 'none';
+                document.getElementById('combined-result').style.display = 'none';
+
+                updateThreadCounts();
                 toggleCombineButton();
-                toggleStartOverButton();
-
-                updateThreadCounts();
-            }
-        }
-
-        function moveTweetUp(button) {
-            const tweetBox = button.closest('.tweet-box');
-            const prevTweetBox = tweetBox.previousElementSibling;
-            if (prevTweetBox) {
-                tweetBox.parentNode.insertBefore(tweetBox, prevTweetBox);
-                updateThreadCounts();
-            }
-        }
-
-        function moveTweetDown(button) {
-            const tweetBox = button.closest('.tweet-box');
-            const nextTweetBox = tweetBox.nextElementSibling;
-            if (nextTweetBox) {
-                tweetBox.parentNode.insertBefore(nextTweetBox, tweetBox);
-                updateThreadCounts();
-            }
-        }
-
-        function clearAllDrafts() {
-            const tweetThread = document.getElementById('tweet-thread');
-            tweetThread.innerHTML = ''; // Remove all tweet boxes
-            document.getElementById('combined-post').value = ''; // Clear combined post
-            document.getElementById('combined-result').style.display = 'none'; // Hide combined result
-            document.getElementById('char-limit').value = DEFAULT_CHAR_LIMIT; // Reset char limit to default
-            toggleCombineButton();
-            toggleStartOverButton();
-        }
-
-        function showForgotPasswordForm() {
-            document.getElementById('sign-in-form').style.display = 'none';
-            document.getElementById('forgot-password-form').style.display = 'block';
-        }
-
-        function showSignInForm() {
-            document.getElementById('forgot-password-form').style.display = 'none';
-            document.getElementById('sign-in-form').style.display = 'block';
-        }
-
-        async function handleForgotPassword() {
-            const email = document.getElementById('reset-email').value;
-            try {
-                await auth.sendPasswordResetEmail(email);
-                showError("Password reset email sent. Please check your inbox.", 'auth');
-                showSignInForm();
-            } catch (error) {
-                showError("Error sending password reset email. Please try again.");
-            }
-        }
-
-        function getErrorMessage(error) {
-            switch (error.code) {
-                case 'auth/email-already-in-use':
-                    return 'This email is already registered. Please sign in or use a different email.';
-                case 'auth/invalid-email':
-                    return 'Invalid email address. Please check and try again.';
-                case 'auth/weak-password':
-                    return 'Password is too weak. Please use a stronger password.';
-                case 'auth/user-not-found':
-                case 'auth/wrong-password':
-                    return 'Invalid email or password. Please check and try again.';
-                default:
-                    return 'An error occurred. Please try again later.';
-            }
-        }
-
-        function showLoading(isLoading) {
-            const loadingIndicator = document.getElementById('loading-indicator');
-            if (isLoading) {
-                loadingIndicator.style.display = 'block';
-            } else {
-                loadingIndicator.style.display = 'none';
-            }
-        }
-
-        function loadGoogleSignInScript() {
-            const script = document.createElement('script');
-            script.src = 'https://apis.google.com/js/platform.js';
-            script.async = true;
-            script.defer = true;
-            document.head.appendChild(script);
-        }
-
-        // Initialize the page with default settings
-        window.onload = function() {
-            console.log("Page loaded");
-            document.getElementById('char-limit').value = DEFAULT_CHAR_LIMIT;
-            document.getElementById('start-over-btn').style.display = 'none';
-            document.querySelector('.char-limit-control').style.display = 'none';
-            document.getElementById('combine-tweets-btn').style.display = 'none';
-            
-            if (localStorage.getItem('darkMode') === 'true') {
-                document.body.classList.add('dark-mode');
-                document.getElementById('dark-mode-switch').checked = true;
+                toggleCreateNewButton();
             }
 
-            console.log("Calling updateAuthUI");
-            updateAuthUI();
+            function resetTextareaState(textarea) {
+                textarea.style.backgroundColor = ''; // Reset to default (neutral) state
+                updateCharCount(textarea);
+            }
 
-            // Lazy load Google Sign-In script
-            const googleButtons = document.querySelectorAll('.google-btn');
-            googleButtons.forEach(button => {
-                button.addEventListener('mouseover', loadGoogleSignInScript, { once: true });
-            });
-        };
-    </script>
+            function moveTweetUp(button) {
+                const tweetBox = button.closest('.tweet-box');
+                const prevTweetBox = tweetBox.previousElementSibling;
+                if (prevTweetBox) {
+                    tweetBox.parentNode.insertBefore(tweetBox, prevTweetBox);
+                    updateThreadCounts();
+                }
+            }
+
+            function moveTweetDown(button) {
+                const tweetBox = button.closest('.tweet-box');
+                const nextTweetBox = tweetBox.nextElementSibling;
+                if (nextTweetBox) {
+                    tweetBox.parentNode.insertBefore(nextTweetBox, tweetBox);
+                    updateThreadCounts();
+                }
+            }
+
+            function clearAllDrafts() {
+                const tweetThread = document.getElementById('tweet-thread');
+                tweetThread.innerHTML = ''; // Remove all tweet boxes
+                document.getElementById('combined-post').value = ''; // Clear combined post
+                document.getElementById('combined-result').style.display = 'none'; // Hide combined result
+                document.getElementById('char-limit').value = DEFAULT_CHAR_LIMIT; // Reset char limit to default
+                toggleCombineButton();
+                toggleCreateNewButton();
+            }
+
+            function showForgotPasswordForm() {
+                document.getElementById('sign-in-form').style.display = 'none';
+                document.getElementById('forgot-password-form').style.display = 'block';
+            }
+
+            function showSignInForm() {
+                document.getElementById('forgot-password-form').style.display = 'none';
+                document.getElementById('sign-in-form').style.display = 'block';
+            }
+
+            async function handleForgotPassword() {
+                const email = document.getElementById('reset-email').value;
+                try {
+                    await auth.sendPasswordResetEmail(email);
+                    showError("Password reset email sent. Please check your inbox.", 'auth');
+                    showSignInForm();
+                } catch (error) {
+                    showError("Error sending password reset email. Please try again.");
+                }
+            }
+
+            function getErrorMessage(error) {
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        return 'This email is already registered. Please sign in or use a different email.';
+                    case 'auth/invalid-email':
+                        return 'Invalid email address. Please check and try again.';
+                    case 'auth/weak-password':
+                        return 'Password is too weak. Please use a stronger password.';
+                    case 'auth/user-not-found':
+                    case 'auth/wrong-password':
+                        return 'Invalid email or password. Please check and try again.';
+                    default:
+                        return 'An error occurred. Please try again later.';
+                }
+            }
+
+            function showLoading(isLoading) {
+                const loadingIndicator = document.getElementById('loading-indicator');
+                if (isLoading) {
+                    loadingIndicator.style.display = 'block';
+                } else {
+                    loadingIndicator.style.display = 'none';
+                }
+            }
+
+            function loadGoogleSignInScript() {
+                const script = document.createElement('script');
+                script.src = 'https://apis.google.com/js/platform.js';
+                script.async = true;
+                script.defer = true;
+                document.head.appendChild(script);
+            }
+
+            // Initialize the page with default settings
+            window.onload = function() {
+                console.log("Page loaded");
+                document.getElementById('char-limit').value = DEFAULT_CHAR_LIMIT;
+                document.getElementById('create-new-btn').style.display = 'none';
+                document.querySelector('.char-limit-control').style.display = 'none';
+                document.getElementById('combine-tweets-btn').style.display = 'none';
+                
+                if (localStorage.getItem('darkMode') === 'true') {
+                    document.body.classList.add('dark-mode');
+                    document.getElementById('dark-mode-switch').checked = true;
+                }
+
+                console.log("Calling updateAuthUI");
+                updateAuthUI();
+
+                // Lazy load Google Sign-In script
+                const googleButtons = document.querySelectorAll('.google-btn');
+                googleButtons.forEach(button => {
+                    button.addEventListener('mouseover', loadGoogleSignInScript, { once: true });
+                });
+            };
+        </script>
+    </div>
 </body>
 </html>
