@@ -22,15 +22,17 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
+            padding-top: 20px; /* Adjusted padding to bring content closer to the top */
         }
 
         h1 {
             text-align: left;
             margin-bottom: 30px;
             padding-left: 20px;
+            margin-top: 0;
         }
 
         .tweet-box {
@@ -460,8 +462,8 @@
 
         .user-controls {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 20px;
+            right: 20px;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
@@ -797,6 +799,148 @@
             color: #f5f5f7;
         }
 
+        .drafts-sidebar {
+            width: 25%;
+            padding-right: 20px;
+        }
+
+        .draft-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .draft-content {
+            flex-grow: 1;
+        }
+
+        .draft-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .draft-date {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .draft-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .draft-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .draft-actions button:hover {
+            color: #0071e3;
+        }
+
+        .drafts-sidebar {
+            width: 25%;
+            padding-right: 20px;
+        }
+
+        .draft-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .draft-content {
+            flex-grow: 1;
+        }
+
+        .draft-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .draft-date {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .draft-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .draft-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .draft-actions button:hover {
+            color: #0071e3;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start; /* Align items to the top */
+        }
+
+        .drafts-sidebar {
+            width: 25%;
+            padding-right: 20px;
+        }
+
+        .draft-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .draft-content {
+            flex-grow: 1;
+        }
+
+        .draft-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .draft-date {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .draft-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .draft-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .draft-actions button:hover {
+            color: #0071e3;
+        }
+
+        .post-section {
+            width: 75%;
+        }
+
         .error-message.success {
             color: #28a745;
             background-color: #d4edda;
@@ -858,50 +1002,54 @@
             <a href="#" onclick="showSignInForm()">Back to Sign In</a>
         </div>
 
-        <div class="controls">
-            <div class="char-limit-control">
-                <label for="char-limit">Character Limit:</label>
-                <input type="number" id="char-limit" value="280">
+        <div class="main-content">
+            <div id="drafts-list" class="drafts-sidebar">
+                <h2>Drafts</h2>
+                <ul id="drafts-ul"></ul>
             </div>
-            <button id="create-new-btn" onclick="createNewDraft()">Create New</button>
-            <button id="save-draft-btn" onclick="saveDraftToFirestore()">Save Draft</button>
-        </div>
 
-        <div id="general-error" class="error-message"></div>
+            <div class="post-section">
+                <div class="controls">
+                    <div class="char-limit-control">
+                        <label for="char-limit">Character Limit:</label>
+                        <input type="number" id="char-limit" value="280">
+                    </div>
+                    <button id="create-new-btn" onclick="createNewDraft()">Create New</button>
+                    <button id="save-draft-btn" onclick="saveDraftToFirestore()">Save Draft</button>
+                </div>
 
-        <div id="drafts-list" style="display: none;">
-            <h2>Drafts</h2>
-            <ul id="drafts-ul"></ul>
-        </div>
+                <div id="general-error" class="error-message"></div>
 
-        <div id="tweet-thread" style="display: none;"></div>
+                <div id="tweet-thread" style="display: none;"></div>
 
-        <button id="combine-tweets-btn" onclick="combinePosts()" style="display: none;">
-            Combine Posts
-        </button>
-
-        <div id="combined-result" style="display: none;">
-            <h3>Combined Post</h3>
-            <textarea id="combined-post" rows="10" oninput="autoResize(this)"></textarea>
-            <div class="tweet-controls-right">
-                <span class="copy-confirm">Copied!</span>
-                <button onclick="copyToClipboard('combined-post')">
-                    Copy Combined Post
+                <button id="combine-tweets-btn" onclick="combinePosts()" style="display: none;">
+                    Combine Posts
                 </button>
-            </div>
-        </div>
 
-        <div id="loading-indicator" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
-            <div class="spinner"></div>
-            <p>Loading...</p>
-        </div>
+                <div id="combined-result" style="display: none;">
+                    <h3>Combined Post</h3>
+                    <textarea id="combined-post" rows="10" oninput="autoResize(this)"></textarea>
+                    <div class="tweet-controls-right">
+                        <span class="copy-confirm">Copied!</span>
+                        <button onclick="copyToClipboard('combined-post')">
+                            Copy Combined Post
+                        </button>
+                    </div>
+                </div>
 
-        <div id="delete-modal" class="modal" style="display: none;">
-            <div class="modal-content">
-                <h3>Confirm Delete</h3>
-                <p>Are you sure you want to delete this draft?</p>
-                <button id="confirm-delete-btn">Delete</button>
-                <button id="cancel-delete-btn">Cancel</button>
+                <div id="loading-indicator" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+                    <div class="spinner"></div>
+                    <p>Loading...</p>
+                </div>
+
+                <div id="delete-modal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <h3>Confirm Delete</h3>
+                        <p>Are you sure you want to delete this draft?</p>
+                        <button id="confirm-delete-btn">Delete</button>
+                        <button id="cancel-delete-btn">Cancel</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1699,7 +1847,6 @@
             }
 
             function displayDraftsList(drafts) {
-                const draftsList = document.getElementById('drafts-list');
                 const draftsUl = document.getElementById('drafts-ul');
                 draftsUl.innerHTML = '';
 
@@ -1709,18 +1856,25 @@
                 drafts.forEach((draft, index) => {
                     const li = document.createElement('li');
                     const firstTweet = draft.tweets && draft.tweets.length > 0 ? draft.tweets[0] : '';
-                    const previewText = firstTweet.length > 19 ? firstTweet.substring(0, 19) + '...' : firstTweet;
+                    const previewText = firstTweet.length > 30 ? firstTweet.substring(0, 30) + '...' : firstTweet;
                     const timeAgo = getTimeAgo(draft.timestamp.toDate());
 
                     li.innerHTML = `
-                        <span>${index === 0 ? 'Current: ' : ''}${previewText} ${timeAgo}</span>
-                        <button onclick="loadDraft('${draft.id}')">Load</button>
-                        <button onclick="showDeleteConfirmation('${draft.id}')">Delete</button>
+                        <div class="draft-item">
+                            <div class="draft-content">
+                                <div class="draft-title">${previewText}</div>
+                                <div class="draft-date">${timeAgo}</div>
+                            </div>
+                            <div class="draft-actions">
+                                <button onclick="loadDraft('${draft.id}')" title="Load Draft">📄</button>
+                                <button onclick="showDeleteConfirmation('${draft.id}')" title="Delete Draft">🗑️</button>
+                            </div>
+                        </div>
                     `;
                     draftsUl.appendChild(li);
                 });
 
-                draftsList.style.display = 'block';
+                document.querySelector('.drafts-sidebar').style.display = 'block';
             }
 
             function getTimeAgo(date) {
