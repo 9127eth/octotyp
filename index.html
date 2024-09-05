@@ -1188,6 +1188,8 @@
                         const tweetThread = document.getElementById('tweet-thread');
                         const charLimitControl = document.querySelector('.char-limit-control');
                         const draftsList = document.getElementById('drafts-list');
+                        const saveDraftBtn = document.getElementById('save-draft-btn');
+                        const createNewBtn = document.getElementById('create-new-btn');
 
                         if (window.currentUser) {
                             console.log("updateAuthUI: User is logged in");
@@ -1201,6 +1203,8 @@
                             }
                             if (tweetThread) tweetThread.style.display = 'block';
                             if (charLimitControl) charLimitControl.style.display = 'inline-block';
+                            if (saveDraftBtn) saveDraftBtn.style.display = 'inline-block';
+                            if (createNewBtn) createNewBtn.style.display = 'inline-block';
                             
                             clearAllDrafts();
                             window.currentDraftId = null;
@@ -1219,6 +1223,8 @@
                             if (tweetThread) tweetThread.style.display = 'none';
                             if (charLimitControl) charLimitControl.style.display = 'none';
                             if (draftsList) draftsList.style.display = 'none';
+                            if (saveDraftBtn) saveDraftBtn.style.display = 'none';
+                            if (createNewBtn) createNewBtn.style.display = 'none';
                             clearAllDrafts();
                         }
                     } catch (error) {
