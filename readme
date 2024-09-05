@@ -1,0 +1,18 @@
+Some general rules:
+This is my first time coding, so please always walk me through step by step how to do things and always add remove code for me when possible. 
+
+Drafts: 
+
+I want to add an ability for users to save drafts and view a list of their drafts. This list draft modal will live to the left of where all the post drafting happens. Similar to how chatgpt stores their drafts on the left. One draft should represent a full twitter thread of a session, so drafts should have an identifier with them. Furthermore, a draft should save all of the components of a full post, e.g. if the URL box is checked, if a combined post was used, all tweets in the thread or combined post and its contents. So essentially all these things should be wrapped into one single saved "draft''. 
+
+A saved draft should be created when a user for the first time starts typing in a post or interacts with the the settigs in anyway. Basically whatever triggers the text box to turn green should also trigger a saved draft to pop up.
+
+The way it would work is, every time a user starts a new post, it would generate a draft that always serves as what they are currently working on. Then, the only time this draft would be updated/saved is when a user either hits "create new", "save", refreshes the page, if the window closes, if the user loads a different draft, or the user signs out. 
+
+Users will be able to click on any draft which will load their draft tweets and let the user make additional changes. If when a user hits their draft to edit they were working on a different draft, the previous draft will be saved followed by the intended draft loading. 
+
+The user should also be able to delete drafts. This should trigger a pop up to verify if they want to delete that draft. Remember this is my first time coding so I need really specific instructions on what to do. I do want drafts to eventually be a paid version. So let's make sure it is set up that way where the feature can be enabled or disabled at the account level. But to start, everyone that has an account will be able to save a draft. But I need to be ready to make this an upgradeable feature when I start to charge a subscription for a pro Plan. Lets use firestore and get started. There is already a basic set up with drafts.js, so utilize this structure but make any necessary changes to meet my requirements. 
+
+Hitting create new should just trigger the saving of the current draft it was working on to then start with a clean slate a new draft, which will then trigger a clean post page.
+
+Remember we are using environment variables to store the firebase config.
