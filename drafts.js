@@ -1,10 +1,17 @@
 import { db } from './firebase.js';
-import { collection, addDoc, updateDoc, getDocs, doc, deleteDoc, getDoc } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, getDocs, doc, deleteDoc, getDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
 
 export async function saveDraft(userId, content) {
     try {
         const draftsRef = collection(db, 'users', userId, 'drafts');
-        const docRef = await addDoc(draftsRef, { content, timestamp: new Date() });
+        const docRef = await addDoc(draftsRef, { 
+            content, 
+            timestamp: new Date(),
+            tweets: content.tweets,
+            combinedPost: content.combinedPost,
+            charLimit: content.charLimit,
+            urlBoxChecked: content.urlBoxChecked
+        });
         return docRef.id;
     } catch (error) {
         console.error('Error saving draft:', error);
@@ -15,7 +22,14 @@ export async function saveDraft(userId, content) {
 export async function updateDraft(userId, draftId, content) {
     try {
         const draftRef = doc(db, 'users', userId, 'drafts', draftId);
-        await updateDoc(draftRef, { content, timestamp: new Date() });
+        await updateDoc(draftRef, { 
+            content, 
+            timestamp: new Date(),
+            tweets: content.tweets,
+            combinedPost: content.combinedPost,
+            charLimit: content.charLimit,
+            urlBoxChecked: content.urlBoxChecked
+        });
     } catch (error) {
         console.error('Error updating draft:', error);
         throw error;
@@ -25,7 +39,8 @@ export async function updateDraft(userId, draftId, content) {
 export async function getDrafts(userId) {
     try {
         const draftsRef = collection(db, 'users', userId, 'drafts');
-        const snapshot = await getDocs(draftsRef);
+        const q = query(draftsRef, orderBy('timestamp', 'desc'));
+        const snapshot = await getDocs(q);
         return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } catch (error) {
         console.error('Error getting drafts:', error);

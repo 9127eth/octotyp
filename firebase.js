@@ -1,6 +1,7 @@
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider, TwitterAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+import { getAuth, GoogleAuthProvider, TwitterAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+import { getFirestore, collection, addDoc, updateDoc, getDocs, doc, deleteDoc, getDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyCQFUeA6yRa0BmX6xBSPK7RJvw5Hvp1W8A",
@@ -14,6 +15,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 const twitterProvider = new TwitterAuthProvider();
 
@@ -22,4 +24,21 @@ twitterProvider.setCustomParameters({
   oauth_consumer_secret: "bMmVnyAA8NdZU4eAGXEVRODfRGM8GlBUM7MfgDh2OK5PblFtcs"
 });
 
-export { auth, googleProvider, twitterProvider, signInWithPopup };
+export { 
+    auth, 
+    db, 
+    googleProvider, 
+    twitterProvider, 
+    signInWithPopup, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword,
+    collection, 
+    addDoc, 
+    updateDoc, 
+    getDocs, 
+    doc, 
+    deleteDoc, 
+    getDoc, 
+    query, 
+    orderBy 
+};
