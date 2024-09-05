@@ -800,15 +800,26 @@
         }
 
         .drafts-sidebar {
-            width: 25%;
+            width: 250px;
             padding-right: 20px;
+        }
+
+        .drafts-sidebar h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        #drafts-ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
         }
 
         .draft-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
+            padding: 10px 0;
             border-bottom: 1px solid #ddd;
         }
 
@@ -818,8 +829,9 @@
 
         .draft-title {
             font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-weight: normal;
+            margin-bottom: 4px;
+            color: #333;
         }
 
         .draft-date {
@@ -829,73 +841,62 @@
 
         .draft-actions {
             display: flex;
-            gap: 10px;
+            gap: 15px;
         }
 
         .draft-actions button {
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
+            color: #888;
+            padding: 0;
         }
 
         .draft-actions button:hover {
             color: #0071e3;
         }
 
-        .drafts-sidebar {
-            width: 25%;
-            padding-right: 20px;
+        /* Dark mode styles */
+        body.dark-mode .draft-title {
+            color: #f5f5f7;
         }
 
-        .draft-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .draft-content {
-            flex-grow: 1;
-        }
-
-        .draft-title {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .draft-date {
-            font-size: 12px;
+        body.dark-mode .draft-date,
+        body.dark-mode .draft-actions button {
             color: #888;
         }
 
-        .draft-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .draft-actions button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .draft-actions button:hover {
-            color: #0071e3;
+        body.dark-mode .draft-item {
+            border-bottom-color: #444;
         }
 
         .main-content {
             display: flex;
             flex-direction: row;
             align-items: flex-start; /* Align items to the top */
+            margin-top: 20px; /* Add some top margin */
         }
 
         .drafts-sidebar {
             width: 25%;
             padding-right: 20px;
+        }
+
+        .drafts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .drafts-header h2 {
+            margin: 0;
+        }
+
+        #create-new-btn {
+            font-size: 14px;
+            padding: 5px 10px;
         }
 
         .draft-item {
@@ -1004,7 +1005,10 @@
 
         <div class="main-content">
             <div id="drafts-list" class="drafts-sidebar">
-                <h2>Drafts</h2>
+                <div class="drafts-header">
+                    <h2>Drafts</h2>
+                    <button id="create-new-btn" onclick="createNewDraft()">Create New</button>
+                </div>
                 <ul id="drafts-ul"></ul>
             </div>
 
@@ -1014,7 +1018,6 @@
                         <label for="char-limit">Character Limit:</label>
                         <input type="number" id="char-limit" value="280">
                     </div>
-                    <button id="create-new-btn" onclick="createNewDraft()">Create New</button>
                     <button id="save-draft-btn" onclick="saveDraftToFirestore()">Save Draft</button>
                 </div>
 
@@ -1853,7 +1856,7 @@
                 // Sort drafts by timestamp, most recent first
                 drafts.sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
 
-                drafts.forEach((draft, index) => {
+                drafts.forEach((draft) => {
                     const li = document.createElement('li');
                     const firstTweet = draft.tweets && draft.tweets.length > 0 ? draft.tweets[0] : '';
                     const previewText = firstTweet.length > 30 ? firstTweet.substring(0, 30) + '...' : firstTweet;
