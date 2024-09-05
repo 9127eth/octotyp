@@ -1516,9 +1516,56 @@
                     await saveDraftToFirestore();
 
                     const draft = await window.getDraft(window.currentUser.uid, draftId);
+                    console.log("Retrieved draft:", draft); // Log the retrieved draft
+
                     if (draft) {
                         clearAllDrafts();
-                        // ... (rest of the loadDraft function remains the same)
+                        document.getElementById('char-limit').value = draft.charLimit || DEFAULT_CHAR_LIMIT;
+
+                        if (Array.isArray(draft.tweets)) {
+                            draft.tweets.forEach((tweetContent, index) => {
+                                if (index === 0) {
+                                    const firstTweetBox = document.querySelector('.tweet-box');
+                                    if (firstTweetBox) {
+                                        const textarea = firstTweetBox.querySelector('textarea');
+                                        textarea.value = tweetContent;
+                                        updateCharCount(textarea);
+                                    } else {
+                                        addTweet();
+                                        const newTextarea = document.querySelector('.tweet-box textarea');
+                                        newTextarea.value = tweetContent;
+                                        updateCharCount(newTextarea);
+                                    }
+                                } else {
+                                    addTweet();
+                                    const newTextarea = document.querySelector('.tweet-box:last-child textarea');
+                                    newTextarea.value = tweetContent;
+                                    updateCharCount(newTextarea);
+                                }
+                            });
+
+                            const urlCheckboxes = document.querySelectorAll('.url-checkbox input');
+                            if (Array.isArray(draft.urlBoxChecked)) {
+                                draft.urlBoxChecked.forEach((isChecked, index) => {
+                                    if (urlCheckboxes[index]) {
+                                        urlCheckboxes[index].checked = isChecked;
+                                    }
+                                });
+                            }
+
+                            document.getElementById('combined-post').value = draft.combinedPost || '';
+                            document.getElementById('combined-result').style.display = draft.combinedPost ? 'block' : 'none';
+
+                            updateThreadCounts();
+                            toggleCombineButton();
+                            toggleCreateNewButton();
+                        } else {
+                            console.error("Draft tweets is not an array:", draft.tweets);
+                            showMessage('Error loading draft: Invalid draft structure', 'error', 'general');
+                        }
+                    } else {
+                        console.error("No draft found with ID:", draftId);
+                        showMessage('Error loading draft: Draft not found', 'error', 'general');
                     }
                 } catch (error) {
                     console.error('Error loading draft:', error);
@@ -1644,11 +1691,11 @@
                 drafts.forEach((draft, index) => {
                     const li = document.createElement('li');
                     const firstTweet = draft.tweets && draft.tweets.length > 0 ? draft.tweets[0] : '';
-                    const previewText = firstTweet.length > 10 ? firstTweet.substring(0, 10) + '...' : firstTweet;
+                    const previewText = firstTweet.length > 19 ? firstTweet.substring(0, 19) + '...' : firstTweet;
                     const timeAgo = getTimeAgo(draft.timestamp.toDate());
 
                     li.innerHTML = `
-                        <span>${index === 0 ? 'Current: ' : ''}${previewText} - ${timeAgo}</span>
+                        <span>${index === 0 ? 'Current: ' : ''}${previewText} ${timeAgo}</span>
                         <button onclick="loadDraft('${draft.id}')">Load</button>
                         <button onclick="showDeleteConfirmation('${draft.id}')">Delete</button>
                     `;
@@ -1687,44 +1734,56 @@
                     await saveDraftToFirestore();
 
                     const draft = await window.getDraft(window.currentUser.uid, draftId);
+                    console.log("Retrieved draft:", draft); // Log the retrieved draft
+
                     if (draft) {
                         clearAllDrafts();
                         document.getElementById('char-limit').value = draft.charLimit || DEFAULT_CHAR_LIMIT;
 
-                        draft.tweets.forEach((tweetContent, index) => {
-                            if (index === 0) {
-                                const firstTweetBox = document.querySelector('.tweet-box');
-                                if (firstTweetBox) {
-                                    const textarea = firstTweetBox.querySelector('textarea');
-                                    textarea.value = tweetContent;
-                                    updateCharCount(textarea);
+                        if (Array.isArray(draft.tweets)) {
+                            draft.tweets.forEach((tweetContent, index) => {
+                                if (index === 0) {
+                                    const firstTweetBox = document.querySelector('.tweet-box');
+                                    if (firstTweetBox) {
+                                        const textarea = firstTweetBox.querySelector('textarea');
+                                        textarea.value = tweetContent;
+                                        updateCharCount(textarea);
+                                    } else {
+                                        addTweet();
+                                        const newTextarea = document.querySelector('.tweet-box textarea');
+                                        newTextarea.value = tweetContent;
+                                        updateCharCount(newTextarea);
+                                    }
                                 } else {
                                     addTweet();
-                                    const newTextarea = document.querySelector('.tweet-box textarea');
+                                    const newTextarea = document.querySelector('.tweet-box:last-child textarea');
                                     newTextarea.value = tweetContent;
                                     updateCharCount(newTextarea);
                                 }
-                            } else {
-                                addTweet();
-                                const newTextarea = document.querySelector('.tweet-box:last-child textarea');
-                                newTextarea.value = tweetContent;
-                                updateCharCount(newTextarea);
+                            });
+
+                            const urlCheckboxes = document.querySelectorAll('.url-checkbox input');
+                            if (Array.isArray(draft.urlBoxChecked)) {
+                                draft.urlBoxChecked.forEach((isChecked, index) => {
+                                    if (urlCheckboxes[index]) {
+                                        urlCheckboxes[index].checked = isChecked;
+                                    }
+                                });
                             }
-                        });
 
-                        const urlCheckboxes = document.querySelectorAll('.url-checkbox input');
-                        draft.urlBoxChecked.forEach((isChecked, index) => {
-                            if (urlCheckboxes[index]) {
-                                urlCheckboxes[index].checked = isChecked;
-                            }
-                        });
+                            document.getElementById('combined-post').value = draft.combinedPost || '';
+                            document.getElementById('combined-result').style.display = draft.combinedPost ? 'block' : 'none';
 
-                        document.getElementById('combined-post').value = draft.combinedPost || '';
-                        document.getElementById('combined-result').style.display = draft.combinedPost ? 'block' : 'none';
-
-                        updateThreadCounts();
-                        toggleCombineButton();
-                        toggleCreateNewButton();
+                            updateThreadCounts();
+                            toggleCombineButton();
+                            toggleCreateNewButton();
+                        } else {
+                            console.error("Draft tweets is not an array:", draft.tweets);
+                            showMessage('Error loading draft: Invalid draft structure', 'error', 'general');
+                        }
+                    } else {
+                        console.error("No draft found with ID:", draftId);
+                        showMessage('Error loading draft: Draft not found', 'error', 'general');
                     }
                 } catch (error) {
                     console.error('Error loading draft:', error);
