@@ -8,9 +8,7 @@ export async function saveDraft(userId, content) {
             content, 
             timestamp: new Date(),
             tweets: content.tweets,
-            combinedPost: content.combinedPost,
-            charLimit: content.charLimit,
-            urlBoxChecked: content.urlBoxChecked
+            // ... other fields ...
         });
         return docRef.id;
     } catch (error) {
@@ -26,9 +24,7 @@ export async function updateDraft(userId, draftId, content) {
             content, 
             timestamp: new Date(),
             tweets: content.tweets,
-            combinedPost: content.combinedPost,
-            charLimit: content.charLimit,
-            urlBoxChecked: content.urlBoxChecked
+            // ... other fields ...
         });
     } catch (error) {
         console.error('Error updating draft:', error);

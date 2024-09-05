@@ -1,3 +1,6 @@
 Some general rules:
 This is my first time coding, so please always walk me through step by step how to do things and always add remove code for me when possible.
 
+i want to work on how and what is displayed in the saved drafts. I want drafts to be ordered chronologically. So at the most top would be the current draft the user is on. Then followed by the most recently saved, this is a change away from last created. 
+
+Also, I want to display on the draft the first 10 characters of the first listed post in the draft. Also I want the time on the draft to be in the format of X Y ago. Y being either "sec", ''min", ''hour'', "days", "years". For clarity sec is seconds and min is minutes. For hours, days, and years, there needs to be logic for when its 1 vs anything greater than 1. For example, if it was 1 day ago it should be "day'' and not "days", but it if was 2 days ago, "days'' should be there. 
