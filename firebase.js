@@ -1,4 +1,3 @@
-
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, TwitterAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
 import { getFirestore, collection, addDoc, updateDoc, getDocs, doc, deleteDoc, getDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
@@ -41,4 +40,8 @@ export {
     getDoc, 
     query, 
     orderBy 
+};
+
+export const onAuthStateChanged = (callback) => {
+    return auth.onAuthStateChanged(callback);
 };

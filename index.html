@@ -908,7 +908,8 @@
         <script type="module">
             import { auth, db, googleProvider, twitterProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword } from './firebase.js';
             import { saveDraft, updateDraft, getDrafts, deleteDraft, getDraft } from './drafts.js';
-            
+            import { onAuthStateChanged } from './firebase.js';
+
             // Make these objects available globally
             window.auth = auth;
             window.db = db;
@@ -924,6 +925,17 @@
             window.getDrafts = getDrafts;
             window.deleteDraft = deleteDraft;
             window.getDraft = getDraft;
+
+            // Add this listener to persist auth state
+            onAuthStateChanged((user) => {
+                if (user) {
+                    window.currentUser = user;
+                    updateAuthUI();
+                } else {
+                    window.currentUser = null;
+                    updateAuthUI();
+                }
+            });
 
             // Define your sign-in functions here
             window.handleGoogleSignIn = async function() {
@@ -1501,7 +1513,7 @@
                     }
                 } else {
                     console.log("No content to save");
-                    showMessage('No content to save', 'error', 'general');
+                    // Removed the showMessage call for empty content
                 }
             }
 
@@ -1829,7 +1841,7 @@
                     }
                 } else {
                     console.log("No content to save");
-                    showMessage('No content to save', 'error', 'general');
+                    // Removed the showMessage call for empty content
                 }
             }
 
