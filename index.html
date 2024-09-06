@@ -841,14 +841,14 @@
 
         .draft-actions {
             display: flex;
-            gap: 15px;
+            gap: 20px;
         }
 
         .draft-actions button {
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 14px;
             color: #888;
             padding: 0;
         }
@@ -924,14 +924,14 @@
 
         .draft-actions {
             display: flex;
-            gap: 10px;
+            gap: 20px;
         }
 
         .draft-actions button {
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         .draft-actions button:hover {
@@ -1869,7 +1869,7 @@
                                 <div class="draft-date">${timeAgo}</div>
                             </div>
                             <div class="draft-actions">
-                                <button onclick="loadDraft('${draft.id}')" title="Load Draft">📄</button>
+                                <button onclick="loadDraft('${draft.id}')" title="Edit Draft">✏️</button>
                                 <button onclick="showDeleteConfirmation('${draft.id}')" title="Delete Draft">🗑️</button>
                             </div>
                         </div>
