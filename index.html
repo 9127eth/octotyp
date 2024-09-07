@@ -798,6 +798,78 @@
             border-color: #444;
         }
 
+        #delete-account-btn {
+            background-color: #f5f5f7; /* Same color as sign-out button */
+            color: #1d1d1f;
+            font-size: 12px;
+            padding: 4px 8px;
+            margin-bottom: 5px; /* Add margin to separate from sign-out button */
+        }
+
+        #delete-account-btn:hover {
+            background-color: #e5e5e7;
+        }
+
+        /* Dark mode styles for delete account button */
+        body.dark-mode #delete-account-btn {
+            background-color: #2c2c2e;
+            color: #f5f5f7;
+        }
+
+        body.dark-mode #delete-account-btn:hover {
+            background-color: #3a3a3c;
+        }
+
+        #user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column-reverse;
+            }
+
+            .drafts-sidebar, .post-section {
+                width: 100%;
+            }
+
+            .drafts-sidebar {
+                margin-top: 20px;
+            }
+
+            .tweet-box {
+                padding-right: 15px;
+            }
+
+            .move-controls {
+                position: static;
+                flex-direction: row;
+                justify-content: center;
+                margin-top: 10px;
+            }
+
+            .move-controls button {
+                margin: 0 5px;
+            }
+
+            .tweet-controls {
+                flex-wrap: wrap;
+            }
+
+            .tweet-controls-left, .tweet-controls-right {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                margin-top: 10px;
+            }
+
+            .tweet-controls-right {
+                justify-content: flex-end;
+            }
+        }
+
         .logo {
             width: 225px; /* 3 times 75px */
             height: 225px; /* 3 times 75px */
@@ -972,7 +1044,8 @@
     <div class="container">
         <div class="user-controls">
             <div id="user-info" style="display: none;">
-                <span id="user-email"></span>
+                <span>Signed in as: <span id="user-email"></span></span>
+                <button id="delete-account-btn" onclick="showDeleteAccountConfirmation()">del acc</button>
                 <button id="sign-out-btn" onclick="handleSignOut()">Sign Out</button>
             </div>
 
@@ -1375,7 +1448,10 @@
                             if (userInfo) userInfo.style.display = 'block';
                             if (userInfo) {
                                 const userEmail = document.getElementById('user-email');
-                                if (userEmail) userEmail.textContent = window.currentUser.email;
+                                if (userEmail) {
+                                    const displayName = window.currentUser.displayName || window.currentUser.email;
+                                    userEmail.textContent = displayName;
+                                }
                             }
                             if (tweetThread) tweetThread.style.display = 'block';
                             if (charLimitControl) charLimitControl.style.display = 'inline-block';
@@ -1467,7 +1543,7 @@
                     </div>
                     <div class="tweet-controls">
                         <div class="tweet-controls-left">
-                            <button onclick="addTweet(this)">Add Tweet</button>
+                            <button onclick="addTweet(this)">Add Post</button>
                             ${isFirstTweet ? '' : '<button class="remove-btn" onclick="removeTweet(this)">Remove</button>'}
                         </div>
                         <div class="tweet-controls-right">
