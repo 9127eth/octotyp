@@ -24,8 +24,11 @@
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
-            padding-top: 20px; /* Adjusted padding to bring content closer to the top */
+            padding: 40px 20px; /* Increased top padding */
+        }
+
+        .main-content {
+            margin-top: 40px; /* Increased top margin */
         }
 
         h1 {
@@ -76,8 +79,9 @@
             margin-bottom: 10px;
         }
 
-        .character-count {
-            margin-right: 10px;
+        .character-count, .thread-count, .char-limit-control {
+            font-size: 12px; /* Smaller text size */
+            color: #888; /* Subdued color */
         }
 
         .thread-count {
@@ -90,7 +94,7 @@
             color: white;
             border: none;
             padding: 6px 12px; /* Reduced padding */
-            border-radius: 20px;
+            border-radius: 8px; /* Slightly more square buttons */
             cursor: pointer;
             font-size: 14px;
             transition: background-color 0.3s ease;
@@ -794,6 +798,15 @@
             border-color: #444;
         }
 
+        .logo {
+            width: 225px; /* 3 times 75px */
+            height: 225px; /* 3 times 75px */
+            object-fit: contain; /* Maintain aspect ratio */
+            display: block;
+            margin-bottom: 20px;
+            max-width: 100%; /* Ensure it doesn't exceed its container */
+        }
+
         body.dark-mode #cancel-delete-btn {
             background-color: #3a3a3c;
             color: #f5f5f7;
@@ -972,7 +985,7 @@
             </div>
         </div>
 
-        <h1>OctoTyp</h1>
+        <img src="images/octoTyp-logo.png" alt="OctoTyp Logo" class="logo">
 
         <div id="auth-error" class="error-message"></div>
 
