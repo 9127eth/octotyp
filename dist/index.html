@@ -422,8 +422,36 @@
         }
 
         .character-count, .thread-count, .char-limit-control {
-            font-size: 12px; /* Smaller text size */
-            color: #888; /* Subdued color */
+            font-size: 14px;
+            color: #666;
+            margin-right: 15px;
+        }
+
+        .character-count.warning {
+            color: #e67700;
+            background-color: rgba(255, 193, 7, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .character-count.danger {
+            color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* Dark mode styles for character count */
+        body.dark-mode .character-count.warning {
+            color: #ffcc00;
+            background-color: rgba(255, 204, 0, 0.25);
+            font-weight: 600;
+        }
+
+        body.dark-mode .character-count.danger {
+            color: #ff6b6b;
+            background-color: rgba(255, 107, 107, 0.25);
+            font-weight: 600;
         }
 
         .thread-count {
@@ -2469,14 +2497,31 @@
                 const countDisplay = tweetBox.querySelector('.character-count');
                 countDisplay.textContent = `${charCount}/${charLimit}`;
 
+                // Remove any existing classes
+                countDisplay.classList.remove('warning', 'danger');
+
                 if (charCount === 0) {
                     textarea.style.backgroundColor = ''; // Neutral state
                 } else if (charCount <= charLimit * 0.95) {
                     textarea.style.backgroundColor = 'rgba(144, 238, 144, 0.3)'; // Light green
                 } else if (charCount <= charLimit) {
-                    textarea.style.backgroundColor = 'rgba(255, 255, 0, 0.3)'; // Bright yellow
+                    // Add warning class to count display
+                    countDisplay.classList.add('warning');
+                    // Check if dark mode is active
+                    if (document.body.classList.contains('dark-mode')) {
+                        textarea.style.backgroundColor = 'rgba(255, 255, 100, 0.25)'; // Brighter yellow for dark mode
+                    } else {
+                        textarea.style.backgroundColor = 'rgba(255, 255, 0, 0.3)'; // Bright yellow
+                    }
                 } else {
-                    textarea.style.backgroundColor = 'rgba(255, 0, 0, 0.2)'; // Bright red
+                    // Add danger class to count display
+                    countDisplay.classList.add('danger');
+                    // Check if dark mode is active
+                    if (document.body.classList.contains('dark-mode')) {
+                        textarea.style.backgroundColor = 'rgba(255, 80, 80, 0.25)'; // Brighter red for dark mode
+                    } else {
+                        textarea.style.backgroundColor = 'rgba(255, 0, 0, 0.2)'; // Bright red
+                    }
                 }
             }
 
@@ -2566,10 +2611,6 @@
                     textarea.value = '';
                     updateCharCount(textarea);
                 }
-                
-                updateThreadCounts();
-                toggleCombineButton();
-                toggleCreateNewButton();
             }
 
             function toggleCombineButton() {

@@ -393,6 +393,7 @@
             flex-direction: column;
             position: relative;
             border: 1px solid rgba(0,0,0,0.05);
+            cursor: text; /* Add cursor: text to indicate it's clickable */
         }
 
         .tweet-box:hover {
@@ -414,6 +415,7 @@
             box-sizing: border-box;
             transition: all var(--transition-speed) ease;
             line-height: 1.5;
+            overflow-y: hidden; /* Hide scrollbars when auto-resizing */
         }
 
         textarea:focus {
@@ -455,6 +457,19 @@
         .character-count.danger {
             color: #dc3545;
             background-color: rgba(220, 53, 69, 0.1);
+        }
+
+        /* Dark mode styles for character count */
+        body.dark-mode .character-count.warning {
+            color: #ffcc00;
+            background-color: rgba(255, 204, 0, 0.25);
+            font-weight: 600;
+        }
+
+        body.dark-mode .character-count.danger {
+            color: #ff6b6b;
+            background-color: rgba(255, 107, 107, 0.25);
+            font-weight: 600;
         }
 
         .thread-count {
@@ -839,7 +854,7 @@
             position: absolute;
             right: -40px;
             top: 0;
-            display: flex;
+            display: flex; /* Will be controlled by JS */
             flex-direction: column;
         }
 
@@ -944,6 +959,24 @@
         #combined-post {
             width: 100%;
             margin-bottom: 10px;
+            resize: none; /* Prevent manual resizing since we're auto-resizing */
+            min-height: 120px;
+            max-height: none; /* Allow unlimited height growth */
+            font-size: 16px;
+            font-family: inherit;
+            padding: 15px;
+            box-sizing: border-box;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 12px;
+            line-height: 1.5;
+            overflow-y: hidden; /* Hide scrollbars when auto-resizing */
+            transition: height 0.1s ease; /* Smooth height transitions */
+        }
+
+        #combined-post:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(216, 67, 57, 0.1);
         }
 
         #combined-result .tweet-controls-right {
@@ -1605,10 +1638,14 @@
         }
 
         .draft-title {
-            font-size: 14px;
-            font-weight: normal;
-            margin-bottom: 4px;
-            color: #333;
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: default;
         }
 
         .draft-date {
@@ -1762,6 +1799,21 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            cursor: default;
+        }
+
+        /* Custom tooltip styling for better appearance */
+        .draft-title:hover::before {
+            content: none;
+        }
+
+        .draft-title:hover::before {
+            opacity: 0;
+        }
+
+        /* Dark mode support for the tooltip */
+        body.dark-mode .draft-title:hover::before {
+            background-color: transparent;
         }
 
         .draft-date {
@@ -2490,10 +2542,42 @@
             display: flex; /* Will be controlled by JS */
             flex-direction: column;
         }
+
+        /* Add these CSS styles for the header and logo */
+        .site-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            margin-bottom: 20px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-logo {
+            width: 120px;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            max-width: 100%;
+            border-radius: 12px;
+        }
+
+        body.dark-mode .header-logo {
+            filter: brightness(0.9);
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <header class="site-header">
+            <div class="logo-container">
+                <img src="images/octoTyp-logo.png" alt="OctoTyp Logo" class="header-logo">
+            </div>
+        </header>
         <div class="user-controls">
             <div id="user-info" style="display: none;">
                 <span>Signed in as: <span id="user-email"></span></span>
@@ -3146,6 +3230,7 @@
                         const heroSection = document.querySelector('.hero-section');
                         const featuresBreakdown = document.getElementById('features-breakdown');
                         const authCard = document.querySelector('.auth-card');
+                        const siteHeader = document.querySelector('.site-header');
 
                         if (window.currentUser) {
                             console.log("updateAuthUI: User is logged in");
@@ -3163,6 +3248,7 @@
                             if (createNewBtn) createNewBtn.style.display = 'inline-block';
                             if (heroSection) heroSection.style.display = 'none';
                             if (featuresBreakdown) featuresBreakdown.style.display = 'none';
+                            if (siteHeader) siteHeader.style.display = 'flex';
                             
                             clearAllDrafts();
                             window.currentDraftId = null;
@@ -3184,6 +3270,7 @@
                             if (heroSection) heroSection.style.display = 'block';
                             if (featuresBreakdown) featuresBreakdown.style.display = 'block';
                             if (authCard) authCard.style.display = 'block';
+                            if (siteHeader) siteHeader.style.display = 'none'; // Hide the header when hero section is visible
                             clearAllDrafts();
                         }
                     } catch (error) {
@@ -3225,13 +3312,26 @@
                 // Add appropriate class based on character count
                 if (charCount > charLimit) {
                     countDisplay.classList.add('danger');
-                    textarea.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
+                    // Check if dark mode is active
+                    if (document.body.classList.contains('dark-mode')) {
+                        textarea.style.backgroundColor = 'rgba(255, 80, 80, 0.25)'; // Brighter red for dark mode
+                    } else {
+                        textarea.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
+                    }
                 } else if (charCount > charLimit * 0.9) {
                     countDisplay.classList.add('warning');
-                    textarea.style.backgroundColor = 'rgba(255, 255, 0, 0.1)';
+                    // Check if dark mode is active
+                    if (document.body.classList.contains('dark-mode')) {
+                        textarea.style.backgroundColor = 'rgba(255, 255, 100, 0.25)'; // Brighter yellow for dark mode
+                    } else {
+                        textarea.style.backgroundColor = 'rgba(255, 255, 0, 0.1)';
+                    }
                 } else {
                     textarea.style.backgroundColor = '';
                 }
+                
+                // Auto-resize the textarea to fit content
+                autoResize(textarea);
                 
                 console.log("updateCharCount: Complete");
             }
@@ -3249,7 +3349,7 @@
                 
                 console.log("addTweet: Setting tweet box HTML");
                 tweetBox.innerHTML = `
-                    <textarea oninput="updateCharCount(this)" data-limit="${charLimit}" placeholder="${placeholderText}"></textarea>
+                    <textarea oninput="updateCharCount(this); autoResize(this)" data-limit="${charLimit}" placeholder="${placeholderText}"></textarea>
                     <div class="tweet-info">
                         <span class="character-count">0/${charLimit}</span>
                         <span class="thread-count"></span>
@@ -3320,6 +3420,10 @@
                 console.log("addTweet: Focusing on new textarea");
                 const newTextarea = tweetBox.querySelector('textarea');
                 newTextarea.focus();
+                
+                // Setup click handler for the new tweet box
+                setupTweetBoxClickHandlers();
+                
                 console.log("addTweet: Completed");
             }
 
@@ -3432,14 +3536,31 @@
 
                 const combinedTextarea = document.getElementById('combined-post');
                 combinedTextarea.value = combinedText;
-                autoResize(combinedTextarea);
-
+                
+                // Make the combined result visible first
                 document.getElementById('combined-result').style.display = 'block';
+                
+                // Use setTimeout to ensure the DOM has updated before resizing
+                setTimeout(() => {
+                    autoResize(combinedTextarea);
+                }, 0);
             }
 
             function autoResize(textarea) {
+                // Reset height to auto first to get the correct scrollHeight
                 textarea.style.height = 'auto';
-                textarea.style.height = textarea.scrollHeight + 'px';
+                // Add a small buffer (2px) to prevent scrollbar from appearing in some browsers
+                textarea.style.height = (textarea.scrollHeight + 2) + 'px';
+                
+                // Special handling for combined post textarea which may have more content
+                if (textarea.id === 'combined-post') {
+                    // Force a reflow to ensure the height is calculated correctly
+                    void textarea.offsetHeight;
+                    // Check if scrollbar is still present and adjust if needed
+                    if (textarea.scrollHeight > textarea.clientHeight) {
+                        textarea.style.height = (textarea.scrollHeight + 5) + 'px';
+                    }
+                }
             }
 
             function toggleDarkMode() {
@@ -3554,17 +3675,20 @@
                                         const textarea = firstTweetBox.querySelector('textarea');
                                         textarea.value = tweetContent;
                                         updateCharCount(textarea);
+                                        autoResize(textarea); // Add autoResize call
                                     } else {
                                         addTweet();
                                         const newTextarea = document.querySelector('.tweet-box textarea');
                                         newTextarea.value = tweetContent;
                                         updateCharCount(newTextarea);
+                                        autoResize(newTextarea); // Add autoResize call
                                     }
                                 } else {
                                     addTweet();
                                     const newTextarea = document.querySelector('.tweet-box:last-child textarea');
                                     newTextarea.value = tweetContent;
                                     updateCharCount(newTextarea);
+                                    autoResize(newTextarea); // Add autoResize call
                                 }
                             });
 
@@ -3578,7 +3702,12 @@
                             }
 
                             document.getElementById('combined-post').value = draft.combinedPost || '';
-                            document.getElementById('combined-result').style.display = draft.combinedPost ? 'block' : 'none';
+                            if (draft.combinedPost) {
+                                document.getElementById('combined-result').style.display = 'block';
+                                autoResize(document.getElementById('combined-post')); // Add autoResize call for combined post
+                            } else {
+                                document.getElementById('combined-result').style.display = 'none';
+                            }
 
                             updateThreadCounts(); // This now calls updateRemoveAndMoveControls
                             toggleCombineButton();
@@ -3600,6 +3729,7 @@
             function resetTextareaState(textarea) {
                 textarea.style.backgroundColor = ''; // Reset to default (neutral) state
                 updateCharCount(textarea);
+                autoResize(textarea); // Ensure textarea is properly sized
             }
 
             function moveTweetUp(button) {
@@ -3736,7 +3866,7 @@
                         li.innerHTML = `
                             <div class="draft-item">
                                 <div class="draft-content">
-                                    <div class="draft-title">${previewText || 'Untitled Draft'}</div>
+                                    <div class="draft-title" title="${firstTweet || 'Untitled Draft'}">${previewText || 'Untitled Draft'}</div>
                                     <div class="draft-date">${timeAgo}</div>
                                 </div>
                                 <div class="draft-actions">
@@ -3805,17 +3935,20 @@
                                         const textarea = firstTweetBox.querySelector('textarea');
                                         textarea.value = tweetContent;
                                         updateCharCount(textarea);
+                                        autoResize(textarea); // Add autoResize call
                                     } else {
                                         addTweet();
                                         const newTextarea = document.querySelector('.tweet-box textarea');
                                         newTextarea.value = tweetContent;
                                         updateCharCount(newTextarea);
+                                        autoResize(newTextarea); // Add autoResize call
                                     }
                                 } else {
                                     addTweet();
                                     const newTextarea = document.querySelector('.tweet-box:last-child textarea');
                                     newTextarea.value = tweetContent;
                                     updateCharCount(newTextarea);
+                                    autoResize(newTextarea); // Add autoResize call
                                 }
                             });
 
@@ -3829,7 +3962,12 @@
                             }
 
                             document.getElementById('combined-post').value = draft.combinedPost || '';
-                            document.getElementById('combined-result').style.display = draft.combinedPost ? 'block' : 'none';
+                            if (draft.combinedPost) {
+                                document.getElementById('combined-result').style.display = 'block';
+                                autoResize(document.getElementById('combined-post')); // Add autoResize call for combined post
+                            } else {
+                                document.getElementById('combined-result').style.display = 'none';
+                            }
 
                             updateThreadCounts(); // This now calls updateRemoveAndMoveControls
                             toggleCombineButton();
@@ -4012,7 +4150,64 @@
                 
                 // Initialize UI state for tweet controls
                 updateRemoveAndMoveControls();
+                
+                // Setup click handlers for any existing tweet boxes
+                setupTweetBoxClickHandlers();
+                
+                // Initialize auto-resize for all textareas
+                document.querySelectorAll('textarea').forEach(textarea => {
+                    autoResize(textarea);
+                });
+                
+                // Add window resize event listener to resize textareas when window size changes
+                window.addEventListener('resize', function() {
+                    // Resize all textareas, with special attention to the combined post
+                    document.querySelectorAll('textarea').forEach(textarea => {
+                        autoResize(textarea);
+                    });
+                    
+                    // Extra check for combined post if it's visible
+                    const combinedResult = document.getElementById('combined-result');
+                    if (combinedResult.style.display === 'block') {
+                        const combinedTextarea = document.getElementById('combined-post');
+                        // Use setTimeout to ensure DOM has updated
+                        setTimeout(() => {
+                            autoResize(combinedTextarea);
+                        }, 0);
+                    }
+                });
             });
+
+            // Add this new function after the other functions
+            function setupTweetBoxClickHandlers() {
+                // Get all tweet boxes
+                const tweetBoxes = document.querySelectorAll('.tweet-box');
+                
+                // Add click event listener to each tweet box
+                tweetBoxes.forEach(box => {
+                    box.addEventListener('click', function(event) {
+                        // Only focus if the click wasn't on a button, input, or textarea
+                        const clickedElement = event.target;
+                        const isInteractive = 
+                            clickedElement.tagName === 'BUTTON' || 
+                            clickedElement.tagName === 'INPUT' || 
+                            clickedElement.tagName === 'TEXTAREA' ||
+                            clickedElement.tagName === 'LABEL' ||
+                            clickedElement.tagName === 'SVG' ||
+                            clickedElement.tagName === 'PATH' ||
+                            clickedElement.closest('button') !== null ||
+                            clickedElement.closest('label') !== null;
+                        
+                        // If the clicked element is not interactive, focus on the textarea
+                        if (!isInteractive) {
+                            const textarea = this.querySelector('textarea');
+                            if (textarea) {
+                                textarea.focus();
+                            }
+                        }
+                    });
+                });
+            }
         </script>
     </div>
 </body>
