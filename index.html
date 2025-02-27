@@ -16,6 +16,8 @@
             --dark-primary: #b83730;
             --light-yellow: #d8d47a;
             --dark-bg: #2c2c2e;
+            --border-radius: 12px;
+            --transition-speed: 0.3s;
         }
 
         body {
@@ -382,89 +384,148 @@
 
         .tweet-box {
             background-color: white;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            box-shadow: var(--box-shadow);
-            transition: box-shadow 0.3s ease;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all var(--transition-speed) ease;
             display: flex;
             flex-direction: column;
             position: relative;
+            border: 1px solid rgba(0,0,0,0.05);
         }
 
         .tweet-box:hover {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border-color: rgba(0,0,0,0.1);
+            transform: translateY(-2px);
         }
 
         textarea {
             width: 100%;
-            border: 1px solid #ccc;
-            border-radius: 12px; /* Increased border-radius for more rounded corners */
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 12px;
             resize: vertical;
-            min-height: 100px;
+            min-height: 120px;
             font-size: 16px;
             font-family: inherit;
-            margin-bottom: 10px;
-            padding: 12px 15px; /* Increased padding for text inside */
-            box-sizing: border-box; /* Ensure padding doesn't affect overall width */
+            margin-bottom: 15px;
+            padding: 15px;
+            box-sizing: border-box;
+            transition: all var(--transition-speed) ease;
+            line-height: 1.5;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(216, 67, 57, 0.1);
         }
 
         textarea::placeholder {
-            color: #999;
+            color: #aaa;
         }
 
         .tweet-info {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             font-size: 14px;
             color: #666;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .character-count, .thread-count, .char-limit-control {
-            font-size: 12px; /* Smaller text size */
-            color: #888; /* Subdued color */
+        .character-count {
+            font-size: 13px;
+            color: #888;
+            font-weight: 500;
+            background-color: rgba(0,0,0,0.03);
+            padding: 4px 10px;
+            border-radius: 12px;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .character-count.warning {
+            color: #e67700;
+            background-color: rgba(255, 193, 7, 0.2);
+        }
+
+        .character-count.danger {
+            color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.1);
         }
 
         .thread-count {
+            font-size: 13px;
+            color: #888;
             display: flex;
             align-items: center;
+            gap: 5px;
         }
 
-        button {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 6px 12px; /* Reduced padding */
-            border-radius: 8px; /* Slightly more square buttons */
+        .url-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #666;
             cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
-            display: inline-block; /* Changed from flex to inline-block */
+            user-select: none;
         }
 
-        button:hover {
-            background-color: #005bbf;
+        .url-checkbox input {
+            margin: 0;
+            cursor: pointer;
         }
 
-        .controls {
-            display: flex;
-            justify-content: space-between;
+        .tooltip-icon {
+            display: inline-flex;
             align-items: center;
-            margin-bottom: 20px;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            background-color: #eee;
+            color: #666;
+            border-radius: 50%;
+            font-size: 11px;
+            font-style: italic;
+            cursor: help;
+            position: relative;
         }
 
-        .char-limit-control {
-            display: flex;
-            align-items: center;
+        .tooltip-icon:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: pre;
+            z-index: 10;
+            width: max-content;
+            max-width: 200px;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            font-style: normal;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
-        #char-limit {
-            width: 60px;
-            padding: 5px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            margin-left: 10px;
+        .tooltip-icon:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: rgba(0,0,0,0.8);
+            margin-bottom: -4px;
+            z-index: 10;
         }
 
         .tweet-controls {
@@ -472,18 +533,297 @@
             justify-content: space-between;
             align-items: center;
             margin-top: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .tweet-controls-left {
             display: flex;
+            gap: 10px;
         }
 
-        .tweet-controls-left button {
-            margin-right: 10px;
+        .tweet-controls-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all var(--transition-speed) ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        button:hover {
+            background-color: #005bbf;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
         }
 
         .copy-btn {
-            margin-left: auto;
+            background-color: #6c757d;
+        }
+
+        .copy-btn:hover {
+            background-color: #5a6268;
+        }
+
+        .copy-confirm {
+            position: absolute;
+            right: 100%;
+            background-color: rgba(40, 167, 69, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .copy-confirm.show {
+            opacity: 1;
+        }
+
+        .remove-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .remove-btn:hover {
+            background-color: #c82333;
+        }
+
+        /* Redesigned move controls */
+        .move-controls {
+            position: absolute;
+            right: -50px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 5;
+        }
+
+        .move-controls button {
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid rgba(0,0,0,0.1);
+            font-size: 16px;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all var(--transition-speed) ease;
+        }
+
+        .move-controls button:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .move-controls button:active {
+            transform: scale(0.95);
+        }
+
+        /* Dark mode styles for the post section */
+        body.dark-mode .post-section {
+            background-color: var(--dark-bg);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        body.dark-mode .controls {
+            border-bottom-color: rgba(255,255,255,0.1);
+        }
+
+        body.dark-mode .char-limit-control {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        body.dark-mode .char-limit-control:hover {
+            background-color: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode #char-limit {
+            background-color: rgba(0,0,0,0.2);
+            border-color: rgba(255,255,255,0.1);
+            color: #f5f5f7;
+        }
+
+        body.dark-mode .tweet-box {
+            background-color: var(--dark-bg);
+            border-color: rgba(255,255,255,0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        body.dark-mode .tweet-box:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        body.dark-mode textarea {
+            background-color: rgba(0,0,0,0.2);
+            border-color: rgba(255,255,255,0.1);
+            color: #f5f5f7;
+        }
+
+        body.dark-mode textarea::placeholder {
+            color: #888;
+        }
+
+        body.dark-mode .character-count {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        body.dark-mode .tooltip-icon {
+            background-color: rgba(255,255,255,0.1);
+            color: #ccc;
+        }
+
+        body.dark-mode .move-controls button {
+            background-color: var(--dark-bg);
+            color: var(--primary-color);
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        body.dark-mode .move-controls button:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Mobile responsiveness for post section */
+        @media (max-width: 768px) {
+            .post-section {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .char-limit-control {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            #save-draft-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .tweet-box {
+                padding: 15px;
+                margin-bottom: 30px;
+            }
+
+            .move-controls {
+                right: 10px;
+                top: -40px;
+                flex-direction: row;
+            }
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+
+        .char-limit-control {
+            display: flex;
+            align-items: center;
+            background-color: rgba(0,0,0,0.03);
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .char-limit-control:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .char-limit-control label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-color);
+            margin-right: 10px;
+        }
+
+        #char-limit {
+            width: 60px;
+            padding: 6px 10px;
+            border-radius: 15px;
+            border: 1px solid rgba(0,0,0,0.1);
+            background-color: white;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--primary-color);
+            text-align: center;
+            transition: all var(--transition-speed) ease;
+        }
+
+        #char-limit:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(216, 67, 57, 0.2);
+        }
+
+        #save-draft-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #save-draft-btn::before {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z'%3E%3C/path%3E%3Cpolyline points='17 21 17 13 7 13 7 21'%3E%3C/polyline%3E%3Cpolyline points='7 3 7 8 15 8'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+        }
+
+        #save-draft-btn:hover {
+            background-color: var(--dark-primary);
+            transform: translateY(-2px);
         }
 
         .remove-btn {
@@ -1308,50 +1648,120 @@
             border-bottom-color: #444;
         }
 
+        /* Drafts Section Styles - Updated Modern Design */
         .main-content {
             display: flex;
             flex-direction: row;
-            align-items: flex-start; /* Align items to the top */
-            margin-top: 20px; /* Add some top margin */
+            align-items: flex-start;
+            margin-top: 30px;
+            gap: 30px;
+            padding: 0 20px;
         }
 
         .drafts-sidebar {
-            width: 25%;
-            padding-right: 20px;
+            width: 300px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            transition: all var(--transition-speed) ease;
+            height: fit-content;
         }
 
         .drafts-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
         }
 
         .drafts-header h2 {
             margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary-color);
         }
 
         #create-new-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
             font-size: 14px;
-            padding: 5px 10px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        #create-new-btn:hover {
+            background-color: var(--dark-primary);
+            transform: translateY(-2px);
+        }
+
+        #create-new-btn svg {
+            stroke: currentColor;
+        }
+
+        #drafts-ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            max-height: 500px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+
+        #drafts-ul::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #drafts-ul::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.03);
+            border-radius: 10px;
+        }
+
+        #drafts-ul::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
         }
 
         .draft-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: all var(--transition-speed) ease;
+            background-color: rgba(0,0,0,0.02);
+            border: 1px solid transparent;
+        }
+
+        .draft-item:hover {
+            background-color: rgba(216, 67, 57, 0.05);
+            border-color: rgba(216, 67, 57, 0.1);
+            transform: translateX(2px);
         }
 
         .draft-content {
             flex-grow: 1;
+            overflow: hidden;
         }
 
         .draft-title {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .draft-date {
@@ -1361,22 +1771,92 @@
 
         .draft-actions {
             display: flex;
-            gap: 20px;
+            gap: 12px;
+            opacity: 0.7;
+            transition: opacity var(--transition-speed) ease;
+        }
+
+        .draft-item:hover .draft-actions {
+            opacity: 1;
         }
 
         .draft-actions button {
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 14px;
+            padding: 6px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-speed) ease;
+            color: var(--text-color);
         }
 
         .draft-actions button:hover {
-            color: #0071e3;
+            background-color: rgba(0,0,0,0.05);
+            transform: scale(1.1);
+        }
+
+        .draft-actions button.edit-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .draft-actions button.delete-btn:hover {
+            color: var(--primary-color);
+        }
+
+        /* Dark mode styles for drafts */
+        body.dark-mode .drafts-sidebar {
+            background-color: var(--dark-bg);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        body.dark-mode .drafts-header {
+            border-bottom-color: rgba(255,255,255,0.1);
+        }
+
+        body.dark-mode .draft-item {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        body.dark-mode .draft-item:hover {
+            background-color: rgba(216, 67, 57, 0.15);
+            border-color: rgba(216, 67, 57, 0.2);
+        }
+
+        body.dark-mode .draft-title {
+            color: #f5f5f7;
+        }
+
+        body.dark-mode .draft-actions button {
+            color: #f5f5f7;
+        }
+
+        body.dark-mode .draft-actions button:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        /* Mobile responsiveness for drafts */
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+                padding: 0 15px;
+            }
+
+            .drafts-sidebar {
+                width: 100%;
+                margin-bottom: 20px;
+            }
         }
 
         .post-section {
             width: 75%;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            transition: all var(--transition-speed) ease;
         }
 
         .error-message.success {
@@ -1862,6 +2342,154 @@
             background-color: #3a3a3c;
             color: #f5f5f7;
         }
+
+        /* Additional modern styling for drafts section */
+        .draft-item {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .draft-item::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 3px;
+            width: 0;
+            background-color: var(--primary-color);
+            transition: width var(--transition-speed) ease;
+        }
+
+        .draft-item:hover::after {
+            width: 100%;
+        }
+
+        .draft-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .draft-actions {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Fix for mobile overlap issues */
+        @media (max-width: 768px) {
+            .draft-item {
+                flex-wrap: nowrap;
+                padding: 12px;
+            }
+
+            .draft-title {
+                max-width: 180px;
+            }
+
+            .draft-actions {
+                gap: 8px;
+            }
+
+            .draft-actions button {
+                padding: 4px;
+            }
+
+            .draft-actions button svg {
+                width: 14px;
+                height: 14px;
+            }
+        }
+
+        /* Empty state for drafts */
+        .empty-drafts {
+            text-align: center;
+            padding: 30px 0;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .empty-drafts svg {
+            width: 40px;
+            height: 40px;
+            stroke: #ccc;
+            margin-bottom: 10px;
+        }
+
+        .empty-drafts p {
+            margin: 5px 0 0;
+        }
+
+        .combine-btn {
+            background-color: var(--accent-yellow);
+            color: #333;
+            margin: 20px 0;
+            padding: 10px 20px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .combine-btn:hover {
+            background-color: var(--light-yellow);
+            transform: translateY(-2px);
+        }
+
+        body.dark-mode .combine-btn {
+            color: #222;
+        }
+
+        #combined-result {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: var(--box-shadow);
+            transition: all var(--transition-speed) ease;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        #combined-result h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: var(--primary-color);
+        }
+
+        body.dark-mode #combined-result {
+            background-color: var(--dark-bg);
+            border-color: rgba(255,255,255,0.05);
+        }
+
+        .tweet-controls-left button {
+            margin-right: 10px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .tweet-controls-left button svg {
+            margin-right: 5px;
+        }
+
+        .remove-btn {
+            background-color: #ff4136; /* Red color for remove button */
+            color: white;
+            display: inline-flex; /* Will be controlled by JS */
+        }
+
+        .remove-btn:hover {
+            background-color: #d0342b; /* Darker red on hover */
+        }
+
+        .move-controls {
+            position: absolute;
+            right: -40px;
+            top: 0;
+            display: flex; /* Will be controlled by JS */
+            flex-direction: column;
+        }
     </style>
 </head>
 <body>
@@ -2054,7 +2682,13 @@
             <div id="drafts-list" class="drafts-sidebar">
                 <div class="drafts-header">
                     <h2>Drafts</h2>
-                    <button id="create-new-btn" onclick="createNewDraft()">Create New</button>
+                    <button id="create-new-btn" onclick="createNewDraft()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        New
+                    </button>
                 </div>
                 <ul id="drafts-ul"></ul>
             </div>
@@ -2072,7 +2706,11 @@
 
                 <div id="tweet-thread" style="display: none;"></div>
 
-                <button id="combine-tweets-btn" onclick="combinePosts()" style="display: none;">
+                <button id="combine-tweets-btn" onclick="combinePosts()" style="display: none;" class="combine-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                    </svg>
                     Combine Posts
                 </button>
 
@@ -2570,22 +3208,32 @@
             }
 
             function updateCharCount(textarea) {
-                const tweetBox = textarea.closest('.tweet-box');
-                const urlCheckbox = tweetBox.querySelector('.url-checkbox input');
-                const charCount = textarea.value.length + (urlCheckbox.checked ? 24 : 0);
+                console.log("updateCharCount: Start");
                 const charLimit = parseInt(textarea.dataset.limit);
-                const countDisplay = tweetBox.querySelector('.character-count');
+                const urlCheckbox = textarea.closest('.tweet-box').querySelector('input[type="checkbox"]');
+                const urlAdjustment = urlCheckbox && urlCheckbox.checked ? 24 : 0;
+                
+                let text = textarea.value;
+                const charCount = text.length - urlAdjustment;
+                
+                const countDisplay = textarea.closest('.tweet-box').querySelector('.character-count');
                 countDisplay.textContent = `${charCount}/${charLimit}`;
-
-                if (charCount === 0) {
-                    textarea.style.backgroundColor = ''; // Neutral state
-                } else if (charCount <= charLimit * 0.95) {
-                    textarea.style.backgroundColor = 'rgba(144, 238, 144, 0.3)'; // Light green
-                } else if (charCount <= charLimit) {
-                    textarea.style.backgroundColor = 'rgba(255, 255, 0, 0.3)'; // Bright yellow
+                
+                // Remove any existing classes
+                countDisplay.classList.remove('warning', 'danger');
+                
+                // Add appropriate class based on character count
+                if (charCount > charLimit) {
+                    countDisplay.classList.add('danger');
+                    textarea.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
+                } else if (charCount > charLimit * 0.9) {
+                    countDisplay.classList.add('warning');
+                    textarea.style.backgroundColor = 'rgba(255, 255, 0, 0.1)';
                 } else {
-                    textarea.style.backgroundColor = 'rgba(255, 0, 0, 0.2)'; // Bright red
+                    textarea.style.backgroundColor = '';
                 }
+                
+                console.log("updateCharCount: Complete");
             }
 
             function addTweet(button) {
@@ -2613,20 +3261,44 @@
                     </div>
                     <div class="tweet-controls">
                         <div class="tweet-controls-left">
-                            <button onclick="addTweet(this)">Add Post</button>
-                            ${isFirstTweet ? '' : '<button class="remove-btn" onclick="removeTweet(this)">Remove</button>'}
+                            <button onclick="addTweet(this)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Add Post
+                            </button>
+                            <button class="remove-btn" onclick="removeTweet(this)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                                Remove
+                            </button>
                         </div>
                         <div class="tweet-controls-right">
                             <span class="copy-confirm">Copied!</span>
-                            <button class="copy-btn" onclick="copyToClipboard(this.closest('.tweet-box').querySelector('textarea'))">Copy</button>
+                            <button class="copy-btn" onclick="copyToClipboard(this.closest('.tweet-box').querySelector('textarea'))">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                                Copy
+                            </button>
                         </div>
                     </div>
-                    ${isFirstTweet ? '' : `
                     <div class="move-controls">
-                        <button onclick="moveTweetUp(this)">▲</button>
-                        <button onclick="moveTweetDown(this)">▼</button>
+                        <button onclick="moveTweetUp(this)" title="Move Up">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 19V5M5 12l7-7 7 7"/>
+                            </svg>
+                        </button>
+                        <button onclick="moveTweetDown(this)" title="Move Down">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 5v14M5 12l7 7 7-7"/>
+                            </svg>
+                        </button>
                     </div>
-                    `}
                 `;
                 
                 if (button) {
@@ -2660,22 +3332,46 @@
                     const threadCountSpan = box.querySelector('.thread-count');
                     threadCountSpan.textContent = `🧵 ${index + 1}/${totalTweets}`;
                 });
+                
+                // Update visibility of remove buttons and move controls
+                updateRemoveAndMoveControls();
+            }
+            
+            function updateRemoveAndMoveControls() {
+                const thread = document.getElementById('tweet-thread');
+                const tweetBoxes = thread.querySelectorAll('.tweet-box');
+                const totalTweets = tweetBoxes.length;
+                
+                // Show/hide remove buttons and move controls based on tweet count
+                tweetBoxes.forEach(box => {
+                    const removeBtn = box.querySelector('.remove-btn');
+                    const moveControls = box.querySelector('.move-controls');
+                    
+                    if (totalTweets <= 1) {
+                        // Hide remove button and move controls when only one tweet
+                        if (removeBtn) removeBtn.style.display = 'none';
+                        if (moveControls) moveControls.style.display = 'none';
+                    } else {
+                        // Show remove button and move controls when multiple tweets
+                        if (removeBtn) removeBtn.style.display = 'inline-flex';
+                        if (moveControls) moveControls.style.display = 'flex';
+                    }
+                });
             }
 
             function removeTweet(button) {
                 const tweetBox = button.closest('.tweet-box');
                 const thread = document.getElementById('tweet-thread');
                 
-                if (thread.children.length > 1) {
-                    tweetBox.remove();
-                } else {
-                    // If it's the last tweet, clear its content instead of removing it
-                    const textarea = tweetBox.querySelector('textarea');
-                    textarea.value = '';
-                    updateCharCount(textarea);
+                // Always remove the tweet box, even if it's the last one
+                tweetBox.remove();
+                
+                // If there are no tweet boxes left, add a new empty one
+                if (thread.children.length === 0) {
+                    addTweet();
                 }
                 
-                updateThreadCounts();
+                updateThreadCounts(); // This now calls updateRemoveAndMoveControls
                 toggleCombineButton();
                 toggleCreateNewButton();
             }
@@ -2884,7 +3580,7 @@
                             document.getElementById('combined-post').value = draft.combinedPost || '';
                             document.getElementById('combined-result').style.display = draft.combinedPost ? 'block' : 'none';
 
-                            updateThreadCounts();
+                            updateThreadCounts(); // This now calls updateRemoveAndMoveControls
                             toggleCombineButton();
                             toggleCreateNewButton();
                         } else {
@@ -3015,26 +3711,53 @@
                 // Sort drafts by timestamp, most recent first
                 drafts.sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
 
-                drafts.forEach((draft) => {
-                    const li = document.createElement('li');
-                    const firstTweet = draft.tweets && draft.tweets.length > 0 ? draft.tweets[0] : '';
-                    const previewText = firstTweet.length > 10 ? firstTweet.substring(0, 10) + '...' : firstTweet;
-                    const timeAgo = getTimeAgo(draft.timestamp.toDate());
-
-                    li.innerHTML = `
-                        <div class="draft-item">
-                            <div class="draft-content">
-                                <div class="draft-title">${previewText}</div>
-                                <div class="draft-date">${timeAgo}</div>
-                            </div>
-                            <div class="draft-actions">
-                                <button onclick="loadDraft('${draft.id}')" title="Edit Draft">✏️</button>
-                                <button onclick="showDeleteConfirmation('${draft.id}')" title="Delete Draft">🗑️</button>
-                            </div>
-                        </div>
+                if (drafts.length === 0) {
+                    // Show empty state
+                    const emptyState = document.createElement('div');
+                    emptyState.className = 'empty-drafts';
+                    emptyState.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                            <line x1="9" y1="15" x2="15" y2="15"></line>
+                        </svg>
+                        <p>No drafts yet</p>
+                        <p>Create a new draft to get started</p>
                     `;
-                    draftsUl.appendChild(li);
-                });
+                    draftsUl.appendChild(emptyState);
+                } else {
+                    drafts.forEach((draft) => {
+                        const li = document.createElement('li');
+                        const firstTweet = draft.tweets && draft.tweets.length > 0 ? draft.tweets[0] : '';
+                        const previewText = firstTweet.length > 10 ? firstTweet.substring(0, 10) + '...' : firstTweet;
+                        const timeAgo = getTimeAgo(draft.timestamp.toDate());
+
+                        li.innerHTML = `
+                            <div class="draft-item">
+                                <div class="draft-content">
+                                    <div class="draft-title">${previewText || 'Untitled Draft'}</div>
+                                    <div class="draft-date">${timeAgo}</div>
+                                </div>
+                                <div class="draft-actions">
+                                    <button onclick="loadDraft('${draft.id}')" title="Edit Draft" class="edit-btn">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                                        </svg>
+                                    </button>
+                                    <button onclick="showDeleteConfirmation('${draft.id}')" title="Delete Draft" class="delete-btn">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M3 6h18"></path>
+                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        draftsUl.appendChild(li);
+                    });
+                }
 
                 document.querySelector('.drafts-sidebar').style.display = 'block';
             }
@@ -3108,7 +3831,7 @@
                             document.getElementById('combined-post').value = draft.combinedPost || '';
                             document.getElementById('combined-result').style.display = draft.combinedPost ? 'block' : 'none';
 
-                            updateThreadCounts();
+                            updateThreadCounts(); // This now calls updateRemoveAndMoveControls
                             toggleCombineButton();
                             toggleCreateNewButton();
                         } else {
@@ -3286,6 +4009,9 @@
 
                 console.log("Calling updateAuthUI");
                 updateAuthUI();
+                
+                // Initialize UI state for tweet controls
+                updateRemoveAndMoveControls();
             });
         </script>
     </div>
