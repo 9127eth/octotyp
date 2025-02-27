@@ -3,13 +3,13 @@ import { getAuth, GoogleAuthProvider, TwitterAuthProvider, signInWithPopup, crea
 import { getFirestore, collection, addDoc, updateDoc, getDocs, doc, deleteDoc, getDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCQFUeA6yRa0BmX6xBSPK7RJvw5Hvp1W8A",
-    authDomain: "octotyp.firebaseapp.com",
-    projectId: "octotyp",
-    storageBucket: "octotyp.appspot.com",
-    messagingSenderId: "346116172699",
-    appId: "1:346116172699:web:39e30db03db57db4d68f3e",
-    measurementId: "G-YH37E0J002"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);
@@ -19,8 +19,8 @@ const googleProvider = new GoogleAuthProvider();
 const twitterProvider = new TwitterAuthProvider();
 
 twitterProvider.setCustomParameters({
-  oauth_consumer_key: "Bfx7dZu3MwNDeoQz8OATe4yXH",
-  oauth_consumer_secret: "bMmVnyAA8NdZU4eAGXEVRODfRGM8GlBUM7MfgDh2OK5PblFtcs"
+  oauth_consumer_key: import.meta.env.VITE_TWITTER_API_KEY,
+  oauth_consumer_secret: import.meta.env.VITE_TWITTER_API_SECRET
 });
 
 export { 
