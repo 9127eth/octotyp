@@ -1,0 +1,64 @@
+# Feature Requirements: AI-Powered Thread Splitter
+
+## Overview
+This feature will enable users to input long text, and the AI will intelligently split it into multiple posts that form a coherent thread while adhering to the character limit. The AI must ensure that each split maintains readability and logical flow, without altering the original text.
+
+## Functional Requirements
+
+### 1. Input Handling
+- Users should be able to input long-form text into the application.
+- The AI should analyze the text and segment it into multiple parts while maintaining readability.
+- Each segment must be within the character limit set for threads (e.g., 280 characters for Twitter/X).
+- Provide an option for users to include numbering (e.g., 1/5, 2/5) at the end of each split to indicate sequence.
+- Allow users to customize the character limit if needed.
+
+### 2. Intelligent Splitting Logic
+- The AI should prioritize natural breakpoints such as:
+  - Sentence endings.
+  - Paragraphs.
+  - Logical pauses (e.g., commas, semicolons, dashes).
+- If a sentence exceeds the character limit, split it in a way that maintains clarity.
+- Ensure smooth transitions between splits to avoid abrupt cutoffs.
+- Avoid splitting URLs, hashtags, and mentions in ways that make them non-functional.
+
+### 3. Output Formatting
+- Display the segmented thread in a preview format before posting.
+- Allow users to manually adjust the splits if needed.
+- Option to copy the entire thread or post directly from the app.
+
+### 4. AI Processing & Performance
+- Implement an efficient NLP model to determine the best split points without altering content.
+- Ensure the AI can handle various content types, including:
+  - Narratives
+  - Lists
+  - Code snippets
+  - Quotes
+- Optimize processing time for real-time or near-instantaneous results.
+
+### 5. User Interface & Experience
+- Clean and intuitive UI for pasting or typing text.
+- Real-time preview of how the thread will look.
+- Option to edit individual segments before finalizing the thread.
+- Button to regenerate the split if the user wants an alternative breakdown.
+
+### 6. Edge Cases & Error Handling
+- Handle extremely long inputs efficiently.
+- Prevent breaking words mid-sentence (unless absolutely necessary).
+- Provide clear error messages if input exceeds processing limits.
+- Allow user feedback on split accuracy for future improvements.
+
+### 7. API & Integration (Optional)
+- If applicable, expose the thread-splitting functionality via an API.
+- Ensure it can integrate with social media platforms for direct posting.
+
+## Non-Functional Requirements
+- **Performance**: The splitting process should be quick (under 3 seconds for long text).
+- **Scalability**: The system should handle a large number of requests without performance degradation.
+- **Security**: Ensure that user data is processed securely and not stored unless necessary.
+- **Cross-Platform Compatibility**: Should work across web and mobile versions of the app.
+
+---
+
+
+This will be the first feature we add that would require a subscription. so we need to set the code up to accomodate ''isPro'' and add this to firebase. 
+Im also okay with adding this feature as a new file since the index.html file is getting big. 
